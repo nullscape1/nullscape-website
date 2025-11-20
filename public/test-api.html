@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test</title>
+</head>
+<body>
+    <h1>API Connection Test</h1>
+    <div id="results"></div>
+    <script>
+        const API_BASE = 'http://localhost:4000/api/v1';
+        const results = document.getElementById('results');
+        
+        async function testAPI() {
+            results.innerHTML = '<p>Testing API connection...</p>';
+            
+            const endpoints = [
+                '/services?status=active',
+                '/portfolio?status=active',
+                '/testimonials?status=active',
+                '/blog?status=published',
+                '/team?status=active',
+                '/tech-stack?status=active',
+                '/pricing?status=active'
+            ];
+            
+            for (const endpoint of endpoints) {
+                try {
+                    const url = `${API_BASE}${endpoint}`;
+                    console.log(`Testing: ${url}`);
+                    const response = await fetch(url);
+                    const data = await response.json();
+                    
+                    const div = document.createElement('div');
+                    div.style.margin = '10px 0';
+                    div.style.padding = '10px';
+                    div.style.border = '1px solid #ccc';
+                    div.innerHTML = `
+                        <strong>${endpoint}</strong><br>
+                        Status: ${response.status} ${response.statusText}<br>
+                        Items: ${data.items?.length || 0}<br>
+                        <pre>${JSON.stringify(data, null, 2).substring(0, 500)}</pre>
+                    `;
+                    results.appendChild(div);
+                } catch (error) {
+                    const div = document.createElement('div');
+                    div.style.margin = '10px 0';
+                    div.style.padding = '10px';
+                    div.style.border = '1px solid red';
+                    div.style.color = 'red';
+                    div.innerHTML = `
+                        <strong>${endpoint}</strong><br>
+                        ERROR: ${error.message}
+                    `;
+                    results.appendChild(div);
+                }
+            }
+        }
+        
+        testAPI();
+    </script>
+</body>
+</html>
+
+

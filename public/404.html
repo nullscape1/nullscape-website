@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Page not found - Nullscape">
+    <meta name="robots" content="noindex, follow">
+    <meta name="theme-color" content="#005CFF">
+    <link rel="canonical" href="https://nullscape.example.com/404">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta property="og:title" content="404 - Page Not Found | Nullscape">
+    <meta property="og:description" content="The page you’re looking for doesn’t exist.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://nullscape.example.com/404">
+    <meta property="og:image" content="https://nullscape.example.com/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="404 - Page Not Found | Nullscape">
+    <meta name="twitter:description" content="The page you’re looking for doesn’t exist.">
+    <meta name="twitter:image" content="https://nullscape.example.com/og-image.png">
+    <title>404 - Page Not Found | Nullscape</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        .error-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+            padding: var(--spacing-2xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .error-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .error-content {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            max-width: 600px;
+        }
+
+        .error-code {
+            font-family: var(--font-heading);
+            font-size: 120px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: var(--spacing-md);
+            line-height: 1;
+        }
+
+        .error-title {
+            font-family: var(--font-heading);
+            font-size: 36px;
+            font-weight: 600;
+            color: var(--dark-gray);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .error-description {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: var(--spacing-xl);
+            line-height: 1.6;
+        }
+
+        .error-actions {
+            display: flex;
+            gap: var(--spacing-md);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .error-illustration {
+            width: 300px;
+            height: 300px;
+            margin: 0 auto var(--spacing-xl);
+            position: relative;
+        }
+
+        .error-illustration svg {
+            width: 100%;
+            height: 100%;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @media (max-width: 768px) {
+            .error-code {
+                font-size: 80px;
+            }
+            
+            .error-title {
+                font-size: 28px;
+            }
+            
+            .error-illustration {
+                width: 200px;
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header" id="header">
+        <nav class="nav container">
+            <div class="nav-logo">
+                <a href="index.html" style="display: flex; align-items: center; gap: var(--spacing-sm); text-decoration: none; color: var(--dark-gray);">
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                        <rect width="40" height="40" rx="8" fill="url(#logoGradient)"/>
+                        <path d="M12 20L18 26L28 14" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        <defs>
+                            <linearGradient id="logoGradient" x1="0" y1="0" x2="40" y2="40">
+                                <stop offset="0%" stop-color="#005CFF"/>
+                                <stop offset="100%" stop-color="#6C38FF"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <span>Nullscape</span>
+                </a>
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html#home" class="nav-link">Home</a></li>
+                <li><a href="index.html#services" class="nav-link">Services</a></li>
+                <li><a href="index.html#solutions" class="nav-link">Solutions</a></li>
+                <li><a href="index.html#portfolio" class="nav-link">Portfolio</a></li>
+                <li><a href="index.html#about" class="nav-link">About Us</a></li>
+                <li><a href="index.html#contact" class="nav-link">Contact</a></li>
+            </ul>
+            <button class="nav-cta btn-primary" onclick="window.location.href='index.html#contact'">Get a Quote</button>
+            <div class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Error Page -->
+    <section class="error-page">
+        <div class="error-background">
+            <div class="floating-shape shape-1"></div>
+            <div class="floating-shape shape-2"></div>
+        </div>
+        <div class="error-content">
+            <div class="error-illustration">
+                <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="100" cy="100" r="80" fill="url(#errorGradient)" opacity="0.2"/>
+                    <path d="M70 70L130 130M130 70L70 130" stroke="url(#errorGradient)" stroke-width="8" stroke-linecap="round"/>
+                    <defs>
+                        <linearGradient id="errorGradient" x1="0" y1="0" x2="200" y2="200">
+                            <stop offset="0%" stop-color="#005CFF"/>
+                            <stop offset="100%" stop-color="#6C38FF"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+            <h1 class="error-code">404</h1>
+            <h2 class="error-title">Page Not Found</h2>
+            <p class="error-description">
+                Oops! The page you're looking for doesn't exist. It might have been moved, deleted, or the URL might be incorrect.
+            </p>
+            <div class="error-actions">
+                <button class="btn-primary btn-large" onclick="window.location.href='index.html'">Go to Homepage</button>
+                <button class="btn-secondary btn-large" onclick="window.history.back()">Go Back</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <div class="footer-logo">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                            <rect width="40" height="40" rx="8" fill="url(#footerLogoGradient)"/>
+                            <path d="M12 20L18 26L28 14" stroke="white" stroke-width="3"/>
+                            <defs>
+                                <linearGradient id="footerLogoGradient" x1="0" y1="0" x2="40" y2="40">
+                                    <stop offset="0%" stop-color="#005CFF"/>
+                                    <stop offset="100%" stop-color="#6C38FF"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <span>Nullscape</span>
+                    </div>
+                    <p>Building digital products that scale. Your trusted technology partner.</p>
+                </div>
+                <div class="footer-column">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="index.html#services">Services</a></li>
+                        <li><a href="index.html#solutions">Solutions</a></li>
+                        <li><a href="index.html#portfolio">Portfolio</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Services</h4>
+                    <ul>
+                        <li><a href="index.html#services">Mobile Development</a></li>
+                        <li><a href="index.html#services">Web Development</a></li>
+                        <li><a href="index.html#services">AI Solutions</a></li>
+                        <li><a href="index.html#services">Cloud Services</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Contact</h4>
+                    <p>hello@techflow.com</p>
+                    <p>+1 (555) 123-4567</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Nullscape. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/script.js"></script>
+</body>
+</html>

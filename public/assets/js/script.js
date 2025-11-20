@@ -537,7 +537,9 @@ function showErrorMessage(form, message) {
 // ============================================
 
 // Config: set window.NULLSCAPE_API_BASE in HTML to override
-const API_BASE = window.NULLSCAPE_API_BASE || 'http://localhost:4000/api/v1';
+// Production: https://nullscape-backend.onrender.com/api/v1
+// Development: http://localhost:4000/api/v1
+const API_BASE = window.NULLSCAPE_API_BASE || (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:4000/api/v1' : 'https://nullscape-backend.onrender.com/api/v1');
 
 // Production mode detection - suppress console.log in production
 const isProduction = typeof window !== 'undefined' && 

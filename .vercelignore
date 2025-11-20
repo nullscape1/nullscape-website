@@ -1,0 +1,24 @@
+# Vercel ignore file
+# Files/folders to exclude from deployment
+
+# Development files
+*.md
+!README.md
+.env*
+*.log
+.DS_Store
+
+# Node modules (if any)
+node_modules/
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+*.md
+!README.md
+
+# Test files
+test-api.html
+

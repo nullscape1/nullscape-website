@@ -5,21 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Nullscape — Leading IT company specializing in software development, mobile apps, AI solutions, cloud services, and IT consulting.">
     <meta name="theme-color" content="#005CFF">
-    <link rel="canonical" href="https://nullscape.in/">
+    <link rel="canonical" href="https://nullscape.example.com/">
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <meta property="og:title" content="Nullscape - Digital Solutions That Scale">
     <meta property="og:description" content="Nullscape builds scalable digital products: mobile apps, AI, cloud, and consulting.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://nullscape.in/">
-    <meta property="og:image" content="https://nullscape.in/og-image.png">
+    <meta property="og:url" content="https://nullscape.example.com/">
+    <meta property="og:image" content="https://nullscape.example.com/og-image.png">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Nullscape - Digital Solutions That Scale">
     <meta name="twitter:description" content="Nullscape builds scalable digital products: mobile apps, AI, cloud, and consulting.">
-    <meta name="twitter:image" content="https://nullscape.in/og-image.png">
+    <meta name="twitter:image" content="https://nullscape.example.com/og-image.png">
     <title>Nullscape - Digital Solutions That Scale</title>
-    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="/assets/css/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -35,17 +35,17 @@
       "@context": "https://schema.org",
       "@type": "Organization",
       "name": "Nullscape",
-      "url": "https://nullscape.in/",
-      "logo": "https://nullscape.in/favicon.svg",
+      "url": "https://nullscape.example.com/",
+      "logo": "https://nullscape.example.com/favicon.svg",
       "description": "Leading IT company specializing in software development, mobile apps, AI solutions, cloud services, and IT consulting",
       "address": {
         "@type": "PostalAddress",
-        "addressCountry": "IN"
+        "addressCountry": "US"
       },
       "contactPoint": {
         "@type": "ContactPoint",
         "contactType": "Customer Service",
-        "email": "info@nullscape.in"
+        "email": "info@nullscape.com"
       },
       "sameAs": [],
       "offers": {
@@ -57,3 +57,393 @@
     </script>
 </head>
 <body>
+    <!-- Loading Animation -->
+    <div class="loader" id="loader">
+        <div class="loader-content">
+            <div class="loader-circle"></div>
+            <p>Loading...</p>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header" id="header">
+        <nav class="nav container">
+            <div class="nav-logo">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                    <rect width="40" height="40" rx="8" fill="url(#logoGradient)"/>
+                    <path d="M12 20L18 26L28 14" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                    <defs>
+                        <linearGradient id="logoGradient" x1="0" y1="0" x2="40" y2="40">
+                            <stop offset="0%" stop-color="#005CFF"/>
+                            <stop offset="100%" stop-color="#6C38FF"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span>Nullscape</span>
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#home" class="nav-link active">Home</a></li>
+                <li><a href="#services" class="nav-link">Services</a></li>
+                <li><a href="#solutions" class="nav-link">Solutions</a></li>
+                <li><a href="#products" class="nav-link">Products</a></li>
+                <li><a href="#about" class="nav-link">About Us</a></li>
+                <li><a href="#portfolio" class="nav-link">Portfolio</a></li>
+                <li><a href="#careers" class="nav-link">Careers</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+                <li><a href="blog.html" class="nav-link">Blog</a></li>
+            </ul>
+            <button class="nav-cta btn-primary">Get a Quote</button>
+            <div class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-background">
+            <div class="floating-shape shape-1"></div>
+            <div class="floating-shape shape-2"></div>
+            <div class="floating-shape shape-3"></div>
+        </div>
+        <div class="hero-content container">
+            <div class="hero-text">
+                <h1 class="hero-title fade-in-up">We Build Digital Products That Scale</h1>
+                <p class="hero-subtitle fade-in-up">Transforming ideas into innovative software solutions. Specializing in mobile apps, AI solutions, cloud services, and cutting-edge technology consulting.</p>
+                <div class="hero-cta fade-in-up">
+                    <button class="btn-primary btn-large">Get Started</button>
+                    <button class="btn-secondary btn-large">View Portfolio</button>
+                </div>
+            </div>
+            <div class="hero-visual fade-in">
+                <div class="hero-illustration">
+                    <div class="cube-3d"></div>
+                    <div class="particles"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services section" id="services">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Our Services</h2>
+                <p class="section-subtitle">Comprehensive IT solutions tailored to your business needs</p>
+            </div>
+            <!-- Services will be loaded dynamically from admin panel -->
+            <div class="services-grid">
+                <!-- Content loaded via API -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section class="portfolio section" id="portfolio">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Portfolio & Case Studies</h2>
+                <p class="section-subtitle">Explore our successful projects and client success stories</p>
+            </div>
+            <!-- Portfolio Categories will be loaded dynamically from admin panel -->
+            <div class="portfolio-filters">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <!-- Category buttons loaded via API -->
+            </div>
+            <div class="portfolio-grid">
+                <!-- Content loaded via API -->
+            </div>
+        </div>
+    </section>
+
+    <!-- About Us Section -->
+    <section class="about section" id="about">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">About Us</h2>
+                <p class="section-subtitle">Innovation-driven team delivering excellence since 2015</p>
+            </div>
+            <div class="about-content">
+                <div class="about-text">
+                    <h3>Our Mission</h3>
+                    <p>To empower businesses with cutting-edge technology solutions that drive growth, innovation, and digital transformation. We combine technical expertise with creative problem-solving to deliver exceptional results.</p>
+                    
+                    <h3>Our Vision</h3>
+                    <p>To become the world's most trusted technology partner, known for innovation, reliability, and transformative digital solutions that shape the future of business.</p>
+
+                    <div class="achievements">
+                        <div class="achievement-item">
+                            <h4>500+</h4>
+                            <p>Projects Delivered</p>
+                        </div>
+                        <div class="achievement-item">
+                            <h4>200+</h4>
+                            <p>Happy Clients</p>
+                        </div>
+                        <div class="achievement-item">
+                            <h4>50+</h4>
+                            <p>Team Members</p>
+                        </div>
+                        <div class="achievement-item">
+                            <h4>15+</h4>
+                            <p>Awards Won</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-visual">
+                    <!-- Team members will be loaded dynamically from admin panel -->
+                    <div class="team-grid">
+                        <!-- Content loaded via API -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="values">
+                <h3>Our Values</h3>
+                <div class="values-grid">
+                    <div class="value-item">
+                        <div class="value-icon">🎯</div>
+                        <h4>Excellence</h4>
+                        <p>We strive for perfection in every project</p>
+                    </div>
+                    <div class="value-item">
+                        <div class="value-icon">🤝</div>
+                        <h4>Collaboration</h4>
+                        <p>Building strong partnerships with clients</p>
+                    </div>
+                    <div class="value-item">
+                        <div class="value-icon">💡</div>
+                        <h4>Innovation</h4>
+                        <p>Constantly exploring new technologies</p>
+                    </div>
+                    <div class="value-item">
+                        <div class="value-icon">⚡</div>
+                        <h4>Agility</h4>
+                        <p>Fast adaptation to changing needs</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack Section -->
+    <section class="tech-stack section" id="products">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Our Tech Stack</h2>
+                <p class="section-subtitle">Technologies we excel in</p>
+            </div>
+            <!-- Tech Stack will be loaded dynamically from admin panel -->
+            <div class="tech-grid">
+                <!-- Content loaded via API -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">What Our Clients Say</h2>
+                <p class="section-subtitle">Testimonials from satisfied clients</p>
+            </div>
+            <div class="testimonials-carousel">
+                <!-- Content loaded via API -->
+            </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Pricing Plans</h2>
+                <p class="section-subtitle">Choose the plan that fits your needs</p>
+            </div>
+            <!-- Pricing Plans will be loaded dynamically from admin panel -->
+            <div class="pricing-grid">
+                <!-- Content loaded via API -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact section" id="contact">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Get In Touch</h2>
+                <p class="section-subtitle">Let's discuss your next project</p>
+            </div>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-icon">📧</div>
+                        <div>
+                            <h4>Email</h4>
+                            <p>hello@nullscape.com</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">📞</div>
+                        <div>
+                            <h4>Phone</h4>
+                            <p>+1 (555) 123-4567</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">📍</div>
+                        <div>
+                            <h4>Location</h4>
+                            <p>123 Tech Avenue, San Francisco, CA 94102</p>
+                        </div>
+                    </div>
+                    <div class="contact-social">
+                        <a href="#" class="social-link">WhatsApp</a>
+                        <a href="#" class="social-link">Live Chat</a>
+                    </div>
+                </div>
+                <form class="contact-form" id="contactForm" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+                    <input type="hidden" name="form-name" value="contact">
+                    <p style="display:none;">
+                        <label>Don’t fill this out if you’re human: <input name="bot-field"></label>
+                    </p>
+                    <div class="form-group">
+                        <input type="text" name="name" placeholder="Your Name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" name="email" placeholder="Your Email" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="tel" name="phone" placeholder="Phone Number">
+                    </div>
+                    <div class="form-group">
+                        <textarea name="message" placeholder="Your Message" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary btn-large">Send Message</button>
+                </form>
+            </div>
+            <div class="map-container">
+                <div class="map-placeholder">
+                    <p>📍 Google Maps Embed</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <div class="footer-logo">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                            <rect width="40" height="40" rx="8" fill="url(#footerLogoGradient)"/>
+                            <path d="M12 20L18 26L28 14" stroke="white" stroke-width="3"/>
+                            <defs>
+                                <linearGradient id="footerLogoGradient" x1="0" y1="0" x2="40" y2="40">
+                                    <stop offset="0%" stop-color="#005CFF"/>
+                                    <stop offset="100%" stop-color="#6C38FF"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <span>Nullscape</span>
+                    </div>
+                    <p>Building digital products that scale. Your trusted technology partner.</p>
+                    <div class="footer-social">
+                        <a href="#" class="social-icon">Twitter</a>
+                        <a href="#" class="social-icon">LinkedIn</a>
+                        <a href="#" class="social-icon">GitHub</a>
+                        <a href="#" class="social-icon">Facebook</a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#solutions">Solutions</a></li>
+                        <li><a href="#portfolio">Portfolio</a></li>
+                        <li><a href="#about">About Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Services</h4>
+                    <ul>
+                        <li><a href="#">Mobile Development</a></li>
+                        <li><a href="#">Web Development</a></li>
+                        <li><a href="#">AI Solutions</a></li>
+                        <li><a href="#">Cloud Services</a></li>
+                        <li><a href="#">IT Consulting</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Newsletter</h4>
+                    <p>Subscribe to get updates on new technologies and projects</p>
+                    <form class="newsletter-form" name="newsletter" method="POST" data-netlify="true">
+                        <input type="hidden" name="form-name" value="newsletter">
+                        <input type="email" name="email" placeholder="Your email address" required>
+                        <button type="submit" class="btn-primary">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Nullscape. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Careers Section (Hidden by default, shown via link) -->
+    <section class="careers section" id="careers" style="display: none;">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Join Our Team</h2>
+                <p class="section-subtitle">We're always looking for talented individuals</p>
+            </div>
+            <div class="careers-content">
+                <p>Check back soon for open positions!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skip to Content (Accessibility) -->
+    <a href="#home" class="skip-to-content">Skip to main content</a>
+
+    <!-- Optimized Script - Load immediately to hide loader -->
+    <script>
+        // Inline loader hide script for immediate execution
+        (function() {
+            function hideLoader() {
+                var loader = document.getElementById('loader');
+                if (loader) {
+                    loader.style.opacity = '0';
+                    loader.style.visibility = 'hidden';
+                    loader.style.pointerEvents = 'none';
+                    setTimeout(function() {
+                        loader.style.display = 'none';
+                        loader.classList.add('hidden');
+                    }, 300);
+                }
+            }
+            
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function() {
+                    setTimeout(hideLoader, 100);
+                });
+            } else {
+                setTimeout(hideLoader, 100);
+            }
+            
+            window.addEventListener('load', hideLoader);
+            
+            // Safety fallback
+            setTimeout(hideLoader, 1000);
+        })();
+    </script>
+    <script src="assets/js/script.js" defer></script>
+</body>
+</html>

@@ -1271,6 +1271,325 @@ async function loadPricingPlans() {
     });
 }
 
+// Load Trusted Partners
+async function loadPartners() {
+    const container = document.querySelector('.partners-grid');
+    if (!container) {
+        console.warn('[Partners] Container not found');
+        return;
+    }
+    
+    console.log('[Partners] Loading partners...');
+    const data = await fetchJson('/partners?status=active&limit=100&sort=order');
+    console.log('[Partners] Data received:', data);
+    
+    if (!data) {
+        console.error('[Partners] No data returned from API');
+        return;
+    }
+    
+    if (!data.items || data.items.length === 0) {
+        console.log('[Partners] No partners found in data');
+        container.innerHTML = `
+            <div class="empty-state-card" style="grid-column: 1 / -1;">
+                <div class="empty-state-icon">🤝</div>
+                <h3>No Partners Available</h3>
+                <p>Trusted partner logos will be displayed here once they are added through the admin panel.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    console.log(`[Partners] Rendering ${data.items.length} partners`);
+    
+    container.innerHTML = data.items.map((p, index) => {
+        const name = escapeHtml(p.name || '');
+        const subtitle = escapeHtml(p.subtitle || '');
+        const logo = escapeHtml(p.logo || '');
+        const logoColor = escapeHtml(p.logoColor || '#005CFF');
+        const website = escapeHtml(p.website || '');
+        
+        let logoContent = '';
+        if (logo) {
+            logoContent = `<img src="${logo}" alt="${name}" loading="lazy" style="max-width:100%;max-height:60px;object-fit:contain;" onerror="this.onerror=null; this.style.display='none'; this.parentElement.querySelector('.partner-logo-fallback').style.display='flex';">`;
+        }
+        
+        const textLogoHTML = `<div class="partner-logo${logo ? ' partner-logo-fallback' : ''}" style="display:${logo ? 'none' : 'flex'}; color: ${logoColor};">${name}</div>`;
+        
+        const cardContent = `
+            ${logo ? `<div style="display:flex;align-items:center;justify-content:center;min-height:60px;margin-bottom:${subtitle ? '8px' : '0'};width:100%;">${logoContent}</div>` : ''}
+            ${textLogoHTML}
+            ${subtitle ? `<div class="partner-subtitle">${subtitle}</div>` : ''}
+        `;
+        
+        if (website) {
+            return `
+                <a href="${website}" target="_blank" rel="noopener noreferrer" class="partner-card will-animate">
+                    ${cardContent}
+                </a>
+            `;
+        } else {
+            return `
+                <div class="partner-card will-animate">
+                    ${cardContent}
+                </div>
+            `;
+        }
+    }).join('');
+    
+    // Observe new cards for animation
+    container.querySelectorAll('.partner-card').forEach(card => {
+        animationObserver.observe(card);
+    });
+}
+
+// Load Custom Software Development Services
+let currentServiceCategory = null;
+let allServices = [];
+
+async function loadServiceCategories() {
+    const categoryList = document.getElementById('serviceCategoryList');
+    if (!categoryList) return;
+    
+    console.log('[Service Categories] Loading categories...');
+    const data = await fetchJson('/service-categories?status=active&limit=100&sort=order');
+    console.log('[Service Categories] Data received:', data);
+    
+    if (!data?.items || data.items.length === 0) {
+        console.log('[Service Categories] No categories found');
+        return;
+    }
+    
+    categoryList.innerHTML = data.items.map((cat, index) => {
+        const name = escapeHtml(cat.name || '');
+        const slug = escapeHtml(cat.slug || name.toLowerCase().replace(/\s+/g, '-'));
+        const isActive = index === 0 ? 'active' : '';
+        if (index === 0) {
+            currentServiceCategory = slug;
+        }
+        return `<li class="service-category-item ${isActive}" data-category="${slug}" data-category-name="${name}">${name}</li>`;
+    }).join('');
+    
+    // Add click handlers - use event delegation for better reliability
+    categoryList.addEventListener('click', (e) => {
+        const item = e.target.closest('.service-category-item');
+        if (!item) return;
+        
+        const category = item.getAttribute('data-category');
+        const categoryName = item.getAttribute('data-category-name');
+        
+        console.log(`\n[Custom Services] ===== CATEGORY CLICKED =====`);
+        console.log(`Category: ${categoryName} (${category})`);
+        
+        // Update active state
+        categoryList.querySelectorAll('.service-category-item').forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+        
+        // Filter services immediately
+        currentServiceCategory = category;
+        filterServicesByCategory(category, categoryName);
+    });
+    
+    // Trigger filter for first active category if services are already loaded
+    if (allServices && allServices.length > 0) {
+        const firstActive = categoryList.querySelector('.service-category-item.active');
+        if (firstActive) {
+            const category = firstActive.getAttribute('data-category');
+            const categoryName = firstActive.getAttribute('data-category-name');
+            console.log(`[Custom Services] Auto-filtering by first active category: ${categoryName}`);
+            filterServicesByCategory(category, categoryName);
+        }
+    }
+}
+
+async function loadCustomServices() {
+    const grid = document.getElementById('customServicesGrid');
+    if (!grid) return;
+    
+    console.log('[Custom Services] Loading services...');
+    const data = await fetchJson('/services?status=active&limit=100&sort=order');
+    console.log('[Custom Services] Data received:', data);
+    
+    if (!data?.items || data.items.length === 0) {
+        console.log('[Custom Services] No services found');
+        grid.innerHTML = `
+            <div class="empty-state-card" style="grid-column: 1 / -1;">
+                <div class="empty-state-icon">💻</div>
+                <h3>No Services Available</h3>
+                <p>Service offerings will be displayed here once they are added through the admin panel.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    allServices = data.items;
+    console.log(`[Custom Services] Loaded ${allServices.length} total services`);
+    
+    // Log all services with their categories for debugging
+    console.log('[Custom Services] Services loaded:');
+    allServices.forEach(s => {
+        console.log(`  - "${s.name}" → category: "${s.category || 'NO CATEGORY'}"`);
+    });
+    
+    // Wait a bit for categories to load, then filter
+    const checkAndFilter = () => {
+        const categoryList = document.getElementById('serviceCategoryList');
+        if (categoryList && categoryList.children.length > 0) {
+            const firstCategoryItem = categoryList.querySelector('.service-category-item.active');
+            if (firstCategoryItem) {
+                const categorySlug = firstCategoryItem.getAttribute('data-category');
+                const categoryName = firstCategoryItem.getAttribute('data-category-name');
+                console.log(`[Custom Services] Filtering by first active category: ${categoryName}`);
+                filterServicesByCategory(categorySlug, categoryName);
+            } else {
+                // If no active category, show all services
+                console.log('[Custom Services] No active category, showing all services');
+                renderServices(allServices);
+            }
+        } else {
+            // Retry after a short delay if categories aren't loaded yet
+            setTimeout(checkAndFilter, 200);
+        }
+    };
+    
+    // Start checking after a short delay
+    setTimeout(checkAndFilter, 300);
+}
+
+function filterServicesByCategory(categorySlug, categoryName) {
+    console.log(`\n[Custom Services] ===== FILTERING =====`);
+    console.log(`Category Name: "${categoryName}"`);
+    console.log(`Category Slug: "${categorySlug}"`);
+    console.log(`Total services: ${allServices.length}`);
+    
+    if (!allServices || allServices.length === 0) {
+        console.warn('[Custom Services] No services available to filter');
+        const grid = document.getElementById('customServicesGrid');
+        if (grid) {
+            grid.innerHTML = `
+                <div class="empty-state-card" style="grid-column: 1 / -1;">
+                    <div class="empty-state-icon">💻</div>
+                    <h3>No Services Available</h3>
+                    <p>Service offerings will be displayed here once they are added through the admin panel.</p>
+                </div>
+            `;
+        }
+        return;
+    }
+    
+    // Normalize category name for comparison (trim, lowercase)
+    const normalizedCategoryName = categoryName.trim().toLowerCase();
+    
+    // Filter services - match by exact category name (case-insensitive)
+    const filtered = allServices.filter(service => {
+        const serviceCategory = (service.category || '').trim();
+        const normalizedServiceCategory = serviceCategory.toLowerCase();
+        
+        // Exact match (case-insensitive)
+        const exactMatch = normalizedServiceCategory === normalizedCategoryName;
+        
+        if (exactMatch) {
+            console.log(`  ✓ MATCH: "${service.name}" → category: "${serviceCategory}"`);
+        }
+        
+        return exactMatch;
+    });
+    
+    // If no exact match, try partial matching
+    if (filtered.length === 0) {
+        console.log('[Custom Services] No exact matches, trying partial match...');
+        const partialFiltered = allServices.filter(service => {
+            const serviceCategory = (service.category || '').trim().toLowerCase();
+            return serviceCategory.includes(normalizedCategoryName) || 
+                   normalizedCategoryName.includes(serviceCategory);
+        });
+        
+        if (partialFiltered.length > 0) {
+            console.log(`[Custom Services] Found ${partialFiltered.length} services with partial match`);
+            filtered.push(...partialFiltered);
+        }
+    }
+    
+    console.log(`[Custom Services] ===== RESULT: ${filtered.length} services found =====\n`);
+    
+    // Log all services for debugging
+    if (filtered.length === 0) {
+        console.log('[Custom Services] All available services:');
+        allServices.forEach(s => {
+            console.log(`  - "${s.name}" → category: "${s.category || 'NO CATEGORY'}"`);
+        });
+    }
+    
+    if (filtered.length > 0) {
+        renderServices(filtered);
+    } else {
+        // Show empty state if no services for this category
+        const grid = document.getElementById('customServicesGrid');
+        if (grid) {
+            grid.innerHTML = `
+                <div class="empty-state-card" style="grid-column: 1 / -1;">
+                    <div class="empty-state-icon">💻</div>
+                    <h3>No Services in This Category</h3>
+                    <p>No services available for "${categoryName}".</p>
+                    <p style="margin-top: 8px; font-size: 14px; color: #999;">Make sure services are assigned to this category in the admin panel.</p>
+                </div>
+            `;
+        }
+    }
+}
+
+function renderServices(services) {
+    const grid = document.getElementById('customServicesGrid');
+    if (!grid) return;
+    
+    console.log(`[Custom Services] Rendering ${services.length} services`);
+    
+    if (services.length === 0) {
+        grid.innerHTML = `
+            <div class="empty-state-card" style="grid-column: 1 / -1;">
+                <div class="empty-state-icon">💻</div>
+                <h3>No Services Available</h3>
+                <p>Service offerings will be displayed here once they are added through the admin panel.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    grid.innerHTML = services.map(service => {
+        const name = escapeHtml(service.name || '');
+        const description = escapeHtml(service.description || '');
+        const icon = escapeHtml(service.icon || '');
+        
+        let iconHTML = '';
+        if (icon) {
+            iconHTML = `<img src="${icon}" alt="${name}" loading="lazy" style="width:32px;height:32px;object-fit:contain;">`;
+        } else {
+            // Default icon - simple white icon
+            iconHTML = `
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="4" y="4" width="24" height="24" rx="4" stroke="white" stroke-width="2" fill="none"/>
+                    <path d="M12 16L16 20L20 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            `;
+        }
+        
+        return `
+            <div class="custom-service-card will-animate">
+                <div class="custom-service-icon">
+                    ${iconHTML}
+                </div>
+                <h3>${name}</h3>
+                <p>${description || 'Professional service tailored to your business needs.'}</p>
+            </div>
+        `;
+    }).join('');
+    
+    // Observe new cards for animation
+    grid.querySelectorAll('.custom-service-card').forEach(card => {
+        animationObserver.observe(card);
+    });
+}
+
 // Load Portfolio Categories for filters
 async function loadPortfolioCategories() {
     const data = await fetchJson('/portfolio-categories?status=active&limit=100');
@@ -1355,6 +1674,19 @@ window.refreshWebsiteContent = async function() {
         // Homepage content
         if (document.querySelector('.services-grid')) {
             loadPromises.push(loadServices());
+        }
+        if (document.querySelector('.partners-grid')) {
+            loadPromises.push(loadPartners());
+        }
+        // Load service categories first, then services
+        if (document.getElementById('serviceCategoryList')) {
+            loadPromises.push(loadServiceCategories());
+        }
+        if (document.getElementById('customServicesGrid')) {
+            // Load services after a short delay to ensure categories are loaded
+            setTimeout(() => {
+                loadCustomServices();
+            }, 100);
         }
         if (document.querySelector('.portfolio-grid')) {
             loadPromises.push(loadPortfolio());

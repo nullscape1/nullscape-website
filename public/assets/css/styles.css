@@ -946,65 +946,111 @@ body {
 .custom-services-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
+    gap: var(--spacing-lg);
 }
 
 .custom-service-card {
-    background: #005CFF;
-    border-radius: 12px;
-    padding: 32px;
-    color: var(--white);
+    background: var(--white);
+    border: none;
+    border-radius: 20px;
+    padding: 0;
     transition: var(--transition-base);
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    min-height: 240px;
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    min-height: 450px;
+}
+
+.custom-service-card::before {
+    display: none;
 }
 
 .custom-service-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
 }
 
-.custom-service-icon {
-    width: 48px;
-    height: 48px;
-    margin-bottom: 20px;
+.custom-service-illustration {
+    width: 100%;
+    height: 240px;
+    background: linear-gradient(135deg, #E3F2FD 0%, #F5F5F5 100%);
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    z-index: 1;
+    overflow: hidden;
+    padding: var(--spacing-xl) var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
 }
 
-.custom-service-icon svg,
-.custom-service-icon img {
-    width: 32px;
-    height: 32px;
-    filter: brightness(0) invert(1);
+.custom-service-icon {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-base);
+    position: relative;
 }
 
-.custom-service-card h3 {
+.custom-service-card:hover .custom-service-icon {
+    transform: scale(1.02);
+}
+
+.custom-service-card:hover .custom-service-illustration {
+    background: linear-gradient(135deg, #BBDEFB 0%, #EEEEEE 100%);
+}
+
+.custom-service-card-header {
+    padding: 0 var(--spacing-lg);
+    margin-bottom: var(--spacing-sm);
+}
+
+.custom-service-card-title {
     font-family: var(--font-heading);
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 700;
-    margin-bottom: 12px;
-    color: var(--white);
+    margin-bottom: 0;
+    color: #6C38FF;
     line-height: 1.3;
-    position: relative;
-    z-index: 1;
+    text-align: center;
 }
 
-.custom-service-card p {
-    font-size: 14px;
-    line-height: 1.6;
-    color: rgba(255, 255, 255, 0.95);
+.custom-service-card-description {
+    color: #4B5563;
+    line-height: 1.7;
+    margin-bottom: var(--spacing-lg);
     flex-grow: 1;
-    position: relative;
-    z-index: 1;
+    font-size: 15px;
+    padding: 0 var(--spacing-lg);
+    text-align: center;
+    max-width: 100%;
+}
+
+.custom-service-card .custom-service-more-btn {
+    background: linear-gradient(135deg, #6C38FF 0%, #8B5CF6 100%);
+    color: var(--white);
+    border: none;
+    padding: 12px 32px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: var(--transition-base);
+    margin: 0 auto var(--spacing-xl);
+    min-width: 120px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(108, 56, 255, 0.3);
+}
+
+.custom-service-card .custom-service-more-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 56, 255, 0.4);
 }
 
 /* Responsive Design */
@@ -1076,11 +1122,24 @@ body {
     
     .custom-services-grid {
         grid-template-columns: 1fr;
+        gap: var(--spacing-md);
     }
     
     .custom-service-card {
-        min-height: 220px;
-        padding: 24px;
+        min-height: 400px;
+    }
+    
+    .custom-service-illustration {
+        height: 180px;
+        padding: var(--spacing-lg);
+    }
+    
+    .custom-service-card-title {
+        font-size: 20px;
+    }
+    
+    .custom-service-card-description {
+        font-size: 14px;
     }
 }
 
@@ -1927,6 +1986,10 @@ body {
     .services-grid {
         grid-template-columns: repeat(2, 1fr);
     }
+    
+    .custom-services-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 @media (max-width: 768px) {
@@ -1964,6 +2027,10 @@ body {
     }
     
     .services-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .custom-services-grid {
         grid-template-columns: 1fr;
     }
     

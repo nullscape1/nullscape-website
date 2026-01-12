@@ -1555,31 +1555,49 @@ function renderServices(services) {
         return;
     }
     
-    grid.innerHTML = services.map(service => {
+    grid.innerHTML = services.map((service, index) => {
         const name = escapeHtml(service.name || '');
         const description = escapeHtml(service.description || '');
         const icon = escapeHtml(service.icon || '');
         
-        let iconHTML = '';
+        // Create illustration - use icon if available, otherwise generate SVG matching the design
+        let illustrationHTML = '';
         if (icon) {
-            iconHTML = `<img src="${icon}" alt="${name}" loading="lazy" style="width:32px;height:32px;object-fit:contain;">`;
+            illustrationHTML = `<img src="${icon}" alt="${name}" loading="lazy" style="width:100%;height:100%;object-fit:contain;">`;
         } else {
-            // Default icon - simple white icon
-            iconHTML = `
-                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="4" y="4" width="24" height="24" rx="4" stroke="white" stroke-width="2" fill="none"/>
-                    <path d="M12 16L16 20L20 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            // Generate SVG illustration with purple square, white robot head icon, and decorative circles
+            illustrationHTML = `
+                <svg width="100%" height="100%" viewBox="0 0 300 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Decorative circle - top left -->
+                    <circle cx="60" cy="50" r="25" fill="#90CAF9" opacity="0.6"/>
+                    <!-- Main purple square with rounded corners -->
+                    <rect x="100" y="80" width="100" height="100" rx="12" fill="#6C38FF"/>
+                    <!-- White robot head icon inside purple square -->
+                    <!-- Robot head body -->
+                    <rect x="120" y="100" width="60" height="60" rx="8" fill="white" opacity="0.95"/>
+                    <!-- Robot eyes (two circles) -->
+                    <circle cx="140" cy="125" r="6" fill="#6C38FF"/>
+                    <circle cx="160" cy="125" r="6" fill="#6C38FF"/>
+                    <!-- Robot mouth (horizontal line) -->
+                    <rect x="135" y="145" width="30" height="3" rx="1.5" fill="#6C38FF"/>
+                    <!-- Decorative circle - bottom right -->
+                    <circle cx="240" cy="190" r="20" fill="#90CAF9" opacity="0.6"/>
                 </svg>
             `;
         }
         
         return `
             <div class="custom-service-card will-animate">
-                <div class="custom-service-icon">
-                    ${iconHTML}
+                <div class="custom-service-illustration">
+                    <div class="custom-service-icon">
+                        ${illustrationHTML}
+                    </div>
                 </div>
-                <h3>${name}</h3>
-                <p>${description || 'Professional service tailored to your business needs.'}</p>
+                <div class="custom-service-card-header">
+                    <h3 class="custom-service-card-title">${name}</h3>
+                </div>
+                <p class="custom-service-card-description">${description || 'Professional service tailored to your business needs.'}</p>
+                <button class="custom-service-more-btn">MORE</button>
             </div>
         `;
     }).join('');

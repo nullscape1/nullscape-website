@@ -69,17 +69,19 @@
     <header class="header" id="header">
         <nav class="nav container">
             <div class="nav-logo">
-                <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                    <rect width="40" height="40" rx="8" fill="url(#logoGradient)"/>
-                    <path d="M12 20L18 26L28 14" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                    <defs>
-                        <linearGradient id="logoGradient" x1="0" y1="0" x2="40" y2="40">
-                            <stop offset="0%" stop-color="#005CFF"/>
-                            <stop offset="100%" stop-color="#6C38FF"/>
-                        </linearGradient>
-                    </defs>
-                </svg>
-                <span>Nullscape</span>
+                <a href="#home" style="display: flex; align-items: center; gap: var(--spacing-sm); text-decoration: none; color: inherit;">
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                        <rect width="40" height="40" rx="8" fill="url(#logoGradient)"/>
+                        <path d="M12 20L18 26L28 14" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        <defs>
+                            <linearGradient id="logoGradient" x1="0" y1="0" x2="40" y2="40">
+                                <stop offset="0%" stop-color="#005CFF"/>
+                                <stop offset="100%" stop-color="#6C38FF"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <span>Nullscape</span>
+                </a>
             </div>
             <ul class="nav-menu" id="navMenu">
                 <li><a href="#home" class="nav-link active">Home</a></li>
@@ -87,7 +89,7 @@
                 <li><a href="#solutions" class="nav-link">Solutions</a></li>
                 <li><a href="#products" class="nav-link">Products</a></li>
                 <li><a href="#about" class="nav-link">About Us</a></li>
-                <li><a href="#portfolio" class="nav-link">Portfolio</a></li>
+                <li><a href="portfolio.html" class="nav-link">Portfolio</a></li>
                 <li><a href="#careers" class="nav-link">Careers</a></li>
                 <li><a href="#contact" class="nav-link">Contact</a></li>
                 <li><a href="blog.html" class="nav-link">Blog</a></li>
@@ -130,8 +132,8 @@
     <section class="services section" id="services">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">Our Services</h2>
-                <p class="section-subtitle">Comprehensive IT solutions tailored to your business needs</p>
+                <span class="section-label">FEATURES</span>
+                <h2 class="section-title">Our Features & Services</h2>
             </div>
             <!-- Services will be loaded dynamically from admin panel -->
             <div class="services-grid">
@@ -140,20 +142,66 @@
         </div>
     </section>
 
-    <!-- Portfolio Section -->
-    <section class="portfolio section" id="portfolio">
+    <!-- Trusted Partners Section -->
+    <section class="trusted-partners section">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">Portfolio & Case Studies</h2>
-                <p class="section-subtitle">Explore our successful projects and client success stories</p>
+                <h2 class="section-title">Reliable Solutions, Trusted Partnerships</h2>
+                <p class="section-subtitle">Our technology-first approach drives customer success with scalable, long-lasting solutions, making us trusted partners.</p>
             </div>
-            <!-- Portfolio Categories will be loaded dynamically from admin panel -->
-            <div class="portfolio-filters">
-                <button class="filter-btn active" data-filter="all">All</button>
-                <!-- Category buttons loaded via API -->
-            </div>
-            <div class="portfolio-grid">
-                <!-- Content loaded via API -->
+            <div class="partners-grid">
+                <div class="partner-card">
+                    <div class="partner-logo">DELL</div>
+                </div>
+                <div class="partner-card">
+                    <div class="partner-logo">Ai</div>
+                    <div class="partner-subtitle">Enterprise</div>
+                </div>
+                <div class="partner-card">
+                    <div class="partner-logo">kotak</div>
+                    <div class="partner-subtitle">Kotak Mahindra Bank</div>
+                </div>
+                <div class="partner-card">
+                    <div class="partner-logo">benchkart</div>
+                </div>
+                <div class="partner-card">
+                    <div class="partner-logo">Xebia</div>
+                </div>
+                <div class="partner-card">
+                    <div class="partner-logo">SHYAM</div>
+                    <div class="partner-subtitle">FUTURE TECH</div>
+                </div>
+                <div class="partner-card">
+                    <div class="partner-logo">Trustin</div>
+                    <div class="partner-subtitle">trade</div>
+                </div>
+                <div class="partner-card">
+                    <div class="partner-logo">TechCorp</div>
+                </div>
+                <div class="partner-card">
+                    <div class="partner-logo">Innovate</div>
+                </div>
+                <div class="partner-card">
+                    <div class="partner-logo">CloudSync</div>
+                </div>
+                <div class="partner-card">
+                    <div class="partner-logo">DataFlow</div>
+                </div>
+                <div class="partner-card">
+                    <div class="partner-logo">SecureNet</div>
+                </div>
+                <div class="partner-card">
+                    <div class="partner-logo">AppWorks</div>
+                </div>
+                <div class="partner-card">
+                    <div class="partner-logo">WebPro</div>
+                </div>
+                <div class="partner-card">
+                    <div class="partner-logo">DevHub</div>
+                </div>
+                <div class="partner-card">
+                    <div class="partner-logo">CodeBase</div>
+                </div>
             </div>
         </div>
     </section>

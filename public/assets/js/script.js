@@ -703,22 +703,125 @@ async function loadServices() {
     
     console.log(`[Services] Rendering ${data.items.length} services`);
     
-    container.innerHTML = data.items.map(s => {
+    container.innerHTML = data.items.map((s, index) => {
         const name = escapeHtml(s.name);
         const desc = escapeHtml(s.description || '');
         const icon = escapeHtml(s.icon);
+        
+        // Create a detailed illustration based on service name or use provided icon
+        let illustrationHTML = '';
+        if (icon) {
+            illustrationHTML = `<img src="${icon}" alt="${name}" loading="lazy" style="width:100%;height:100%;object-fit:contain;">`;
+        } else {
+            // Generate detailed SVG illustrations based on service type
+            const serviceIllustrations = {
+                'video': `<svg width="100%" height="100%" viewBox="0 0 300 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Background shapes -->
+                    <ellipse cx="60" cy="180" rx="40" ry="20" fill="#FCE7F3" opacity="0.6"/>
+                    <!-- Film Reel (left) -->
+                    <circle cx="50" cy="80" r="28" fill="#F59E0B" stroke="#D97706" stroke-width="3"/>
+                    <circle cx="50" cy="80" r="18" fill="#FCD34D"/>
+                    <circle cx="50" cy="80" r="6" fill="#F59E0B"/>
+                    <rect x="50" y="52" width="3" height="56" fill="#D97706"/>
+                    <rect x="50" y="52" width="56" height="3" fill="#D97706" transform="rotate(90 50 52)"/>
+                    <!-- Laptop (center) -->
+                    <rect x="90" y="70" width="120" height="80" rx="5" fill="#1E3A8A"/>
+                    <rect x="95" y="75" width="110" height="60" rx="3" fill="#6C38FF"/>
+                    <circle cx="150" cy="105" r="18" fill="white"/>
+                    <polygon points="145,105 145,95 155,105 155,115" fill="#6C38FF"/>
+                    <rect x="95" y="135" width="110" height="4" rx="2" fill="#9333EA"/>
+                    <rect x="95" y="142" width="80" height="3" rx="1.5" fill="#C4B5FD"/>
+                    <!-- Person (right) -->
+                    <circle cx="240" cy="75" r="14" fill="#FCD34D"/>
+                    <rect x="228" y="89" width="24" height="35" rx="12" fill="#FCD34D"/>
+                    <rect x="232" y="89" width="16" height="20" rx="8" fill="#FBBF24"/>
+                    <!-- Speaker icon (above person) -->
+                    <rect x="235" y="50" width="18" height="18" rx="2" fill="#EF4444"/>
+                    <circle cx="244" cy="59" r="4" fill="white"/>
+                    <rect x="238" y="56" width="12" height="6" rx="1" fill="white" opacity="0.5"/>
+                </svg>`,
+                'seo': `<svg width="100%" height="100%" viewBox="0 0 300 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Phone (center) -->
+                    <rect x="100" y="50" width="100" height="150" rx="14" fill="#1F2937"/>
+                    <rect x="110" y="60" width="80" height="110" rx="5" fill="white"/>
+                    <rect x="120" y="70" width="60" height="10" rx="2" fill="#6C38FF"/>
+                    <rect x="120" y="88" width="45" height="6" rx="1" fill="#E5E7EB"/>
+                    <rect x="120" y="98" width="55" height="6" rx="1" fill="#E5E7EB"/>
+                    <rect x="120" y="108" width="40" height="6" rx="1" fill="#E5E7EB"/>
+                    <!-- Bar chart on phone -->
+                    <rect x="125" y="130" width="8" height="25" rx="2" fill="#6C38FF"/>
+                    <rect x="138" y="120" width="8" height="35" rx="2" fill="#8B5CF6"/>
+                    <rect x="151" y="125" width="8" height="30" rx="2" fill="#6C38FF"/>
+                    <rect x="164" y="115" width="8" height="40" rx="2" fill="#A78BFA"/>
+                    <!-- SEO Text (large, person climbing) -->
+                    <text x="150" y="185" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#F97316">SEO</text>
+                    <!-- Person climbing on SEO -->
+                    <circle cx="180" cy="165" r="10" fill="#FCD34D"/>
+                    <rect x="175" y="175" width="10" height="15" rx="5" fill="#FCD34D"/>
+                    <rect x="172" y="175" width="16" height="12" rx="6" fill="#FBBF24"/>
+                    <!-- Gears (left and right) -->
+                    <circle cx="60" cy="110" r="22" fill="#F97316"/>
+                    <circle cx="60" cy="110" r="10" fill="#FED7AA"/>
+                    <circle cx="60" cy="110" r="3" fill="#F97316"/>
+                    <rect x="60" y="88" width="4" height="44" fill="#F97316"/>
+                    <rect x="60" y="88" width="44" height="4" fill="#F97316" transform="rotate(90 60 88)"/>
+                    <circle cx="240" cy="130" r="20" fill="#9CA3AF"/>
+                    <circle cx="240" cy="130" r="8" fill="#E5E7EB"/>
+                    <circle cx="240" cy="130" r="2" fill="#9CA3AF"/>
+                    <rect x="240" y="110" width="3" height="40" fill="#9CA3AF"/>
+                    <rect x="240" y="110" width="40" height="3" fill="#9CA3AF" transform="rotate(90 240 110)"/>
+                </svg>`,
+                'cloud': `<svg width="100%" height="100%" viewBox="0 0 300 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Robot head (center) -->
+                    <rect x="110" y="80" width="80" height="70" rx="12" fill="#A78BFA"/>
+                    <rect x="120" y="90" width="60" height="50" rx="8" fill="#C4B5FD"/>
+                    <!-- Eyes -->
+                    <circle cx="135" cy="110" r="8" fill="#6C38FF"/>
+                    <circle cx="165" cy="110" r="8" fill="#6C38FF"/>
+                    <circle cx="135" cy="110" r="4" fill="white"/>
+                    <circle cx="165" cy="110" r="4" fill="white"/>
+                    <!-- Mouth -->
+                    <rect x="140" y="125" width="20" height="3" rx="1.5" fill="#6C38FF"/>
+                    <!-- Cloud (above robot) -->
+                    <ellipse cx="150" cy="60" rx="50" ry="30" fill="#A78BFA" opacity="0.8"/>
+                    <ellipse cx="130" cy="55" rx="25" ry="20" fill="#C4B5FD" opacity="0.8"/>
+                    <ellipse cx="170" cy="55" rx="25" ry="20" fill="#C4B5FD" opacity="0.8"/>
+                    <!-- Network Dots (connected) -->
+                    <circle cx="70" cy="70" r="10" fill="#6C38FF"/>
+                    <circle cx="110" cy="50" r="10" fill="#8B5CF6"/>
+                    <circle cx="190" cy="50" r="10" fill="#6C38FF"/>
+                    <circle cx="230" cy="70" r="10" fill="#8B5CF6"/>
+                    <line x1="80" y1="70" x2="100" y2="50" stroke="#A78BFA" stroke-width="3"/>
+                    <line x1="120" y1="50" x2="180" y2="50" stroke="#A78BFA" stroke-width="3"/>
+                    <line x1="200" y1="50" x2="220" y2="70" stroke="#A78BFA" stroke-width="3"/>
+                    <line x1="150" y1="80" x2="150" y2="60" stroke="#A78BFA" stroke-width="3"/>
+                </svg>`
+            };
+            
+            // Try to match service name to illustration type
+            const nameLower = name.toLowerCase();
+            let svgContent = serviceIllustrations['cloud']; // default
+            if (nameLower.includes('video') || nameLower.includes('production')) {
+                svgContent = serviceIllustrations['video'];
+            } else if (nameLower.includes('seo') || nameLower.includes('optimization')) {
+                svgContent = serviceIllustrations['seo'];
+            } else if (nameLower.includes('cloud')) {
+                svgContent = serviceIllustrations['cloud'];
+            }
+            
+            illustrationHTML = svgContent;
+        }
+        
         return `
             <div class="service-card will-animate">
-                <div class="service-icon">
-                    ${icon ? `<img src="${icon}" alt="${name}" loading="lazy" style="width:48px;height:48px;border-radius:12px;object-fit:cover;">` : `
-                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-                            <defs><linearGradient id="serviceDyn" x1="0" y1="0" x2="48" y2="48"><stop offset="0%" stop-color="#005CFF"/><stop offset="100%" stop-color="#6C38FF"/></linearGradient></defs>
-                            <rect width="48" height="48" rx="12" fill="url(#serviceDyn)"/>
-                            <path d="M16 24L22 30L32 18" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>`}
+                <div class="service-illustration">
+                    <div class="service-icon">
+                        ${illustrationHTML}
+                    </div>
                 </div>
                 <h3>${name}</h3>
-                <p>${desc}</p>
+                <p>${desc || 'Nisl purus in mollis nunc sed id semper. Rhoncus aenean vel elit scelerisque mauris.'}</p>
+                <button class="service-more-btn">MORE</button>
             </div>
         `;
     }).join('');
@@ -783,7 +886,8 @@ async function loadPortfolio() {
     
     container.innerHTML = data.items.map(p => {
         const name = escapeHtml(p.name);
-        const summary = escapeHtml(p.solution || p.problem || '');
+        // Use description if available (supports HTML), otherwise fallback to solution/problem
+        const description = p.description || p.solution || p.problem || '';
         // Map category name to slug for filtering
         const categoryName = p.category || 'Other';
         const cat = categoryMap.get(categoryName) || categoryName.toLowerCase().replace(/\s+/g, '-');
@@ -796,7 +900,7 @@ async function loadPortfolio() {
                 </div>
                 <div class="portfolio-content">
                     <h3>${name}</h3>
-                    <p>${summary}</p>
+                    <div class="portfolio-description">${description}</div>
                     <div class="portfolio-tags">
                         ${tags.map(t => `<span>${escapeHtml(t)}</span>`).join('')}
                     </div>

@@ -56,7 +56,7 @@
     }
     </script>
 </head>
-<body>
+<body class="ns-page-home">
     <!-- Loading Animation -->
     <div class="loader" id="loader">
         <div class="loader-content">
@@ -65,12 +65,12 @@
         </div>
     </div>
 
-    <!-- Header -->
+    <!-- Header: mega navigation (reference: agency-style multi-column menus) -->
     <header class="header" id="header">
-        <nav class="nav container">
-            <div class="nav-logo">
-                <a href="#home" style="display: flex; align-items: center; gap: var(--spacing-sm); text-decoration: none; color: inherit;">
-                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+        <nav class="nav container" aria-label="Primary navigation">
+            <div class="nav-brand">
+                <a href="#home" class="nav-logo" data-nav-anchor="home">
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
                         <rect width="40" height="40" rx="8" fill="url(#logoGradient)"/>
                         <path d="M12 20L18 26L28 14" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
                         <defs>
@@ -83,24 +83,72 @@
                     <span>Nullscape</span>
                 </a>
             </div>
-            <ul class="nav-menu" id="navMenu">
-                <li><a href="#home" class="nav-link active">Home</a></li>
-                <li><a href="#custom-services" class="nav-link">Services</a></li>
-                <li><a href="#portfolio" class="nav-link">Solutions</a></li>
-                <li><a href="#products" class="nav-link">Products</a></li>
-                <li><a href="#about" class="nav-link">About Us</a></li>
-                <li><a href="portfolio.html" class="nav-link">Portfolio</a></li>
-                <li><a href="#testimonials" class="nav-link">Testimonials</a></li>
-                <li><a href="#careers" class="nav-link">Careers</a></li>
-                <li><a href="#contact" class="nav-link">Contact</a></li>
-                <li><a href="blog.html" class="nav-link">Blog</a></li>
+            <ul class="nav-menu" id="navMenu" role="menubar">
+                <li class="nav-item nav-item--mega">
+                    <button type="button" class="nav-link nav-link--trigger" data-nav-anchor="custom-services" id="nav-trigger-services" aria-expanded="false" aria-controls="mega-services" aria-haspopup="true">
+                        Services<span class="nav-chevron" aria-hidden="true"></span>
+                    </button>
+                    <div class="nav-mega" id="mega-services" role="region" aria-labelledby="nav-trigger-services">
+                        <div class="nav-mega__inner">
+                            <div class="nav-mega__col">
+                                <p class="nav-mega__label">From the catalog</p>
+                                <ul class="nav-mega__list" id="navMegaServiceLinks"></ul>
+                                <a href="#custom-services" class="nav-mega__cta">Browse all services →</a>
+                            </div>
+                            <div class="nav-mega__col nav-mega__col--highlight">
+                                <p class="nav-mega__label">Engagement</p>
+                                <p class="nav-mega__text">Fixed scope, time &amp; materials, or a dedicated squad — we align to how you ship.</p>
+                                <a href="#pricing" class="nav-mega__inline">See pricing models</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="#technologies" class="nav-link" data-nav-anchor="technologies">Technologies</a>
+                </li>
+                <li class="nav-item nav-item--mega">
+                    <button type="button" class="nav-link nav-link--trigger" data-nav-anchor="portfolio" id="nav-trigger-solutions" aria-expanded="false" aria-controls="mega-solutions" aria-haspopup="true">
+                        AI &amp; Solutions<span class="nav-chevron" aria-hidden="true"></span>
+                    </button>
+                    <div class="nav-mega nav-mega--simple" id="mega-solutions" role="region" aria-labelledby="nav-trigger-solutions">
+                        <div class="nav-mega__inner nav-mega__inner--stack">
+                            <ul class="nav-mega__list nav-mega__list--plain">
+                                <li><a href="#portfolio">Selected work</a></li>
+                                <li><a href="portfolio.html">Full portfolio</a></li>
+                                <li><a href="#testimonials">Testimonials</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="#industries" class="nav-link" data-nav-anchor="industries">Industries</a>
+                </li>
+                <li class="nav-item nav-item--mega">
+                    <button type="button" class="nav-link nav-link--trigger" data-nav-anchor="about" id="nav-trigger-company" aria-expanded="false" aria-controls="mega-company" aria-haspopup="true">
+                        Company<span class="nav-chevron" aria-hidden="true"></span>
+                    </button>
+                    <div class="nav-mega nav-mega--simple" id="mega-company" role="region" aria-labelledby="nav-trigger-company">
+                        <div class="nav-mega__inner nav-mega__inner--stack">
+                            <ul class="nav-mega__list nav-mega__list--plain">
+                                <li><a href="#about">About</a></li>
+                                <li><a href="#team">Team</a></li>
+                                <li><a href="#careers">Careers</a></li>
+                                <li><a href="blog.html">Blog</a></li>
+                                <li><a href="#contact">Contact</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
             </ul>
-            <button class="nav-cta btn-primary">Get a Quote</button>
-            <div class="nav-toggle" id="navToggle">
-                <span></span>
-                <span></span>
-                <span></span>
+            <div class="nav-actions">
+                <a href="#contact" class="btn-nav-secondary">Let’s Talk</a>
+                <a href="#contact" class="btn-primary nav-cta nav-cta--hire">Hire Now</a>
             </div>
+            <button type="button" class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="navMenu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </nav>
     </header>
 
@@ -116,8 +164,8 @@
                 <h1 class="hero-title fade-in-up">We Build Digital Products That Scale</h1>
                 <p class="hero-subtitle fade-in-up">Transforming ideas into innovative software solutions. Specializing in mobile apps, AI solutions, cloud services, and cutting-edge technology consulting.</p>
                 <div class="hero-cta fade-in-up">
-                    <button class="btn-primary btn-large">Get Started</button>
-                    <button class="btn-secondary btn-large">View Portfolio</button>
+                    <a href="#contact" class="btn-primary btn-large hero-cta-primary">Hire Now</a>
+                    <a href="#contact" class="btn-secondary btn-large hero-cta-secondary">Let’s Talk</a>
                 </div>
             </div>
             <div class="hero-visual fade-in">
@@ -133,6 +181,18 @@
     <div class="growth-cms-zone">
         <div class="container" data-cms-root data-cms-slug="home"></div>
     </div>
+
+    <!-- Stats strip (overridable via GET /global-settings keys: stats.*) -->
+    <section class="stats-strip section" aria-label="Company highlights">
+        <div class="container">
+            <div class="stats-strip__grid" id="siteStatsGrid">
+                <div class="stats-strip__item"><span class="stats-strip__value" data-stat="clients">250+</span><span class="stats-strip__label" data-stat-label="clients">Happy Clients</span></div>
+                <div class="stats-strip__item"><span class="stats-strip__value" data-stat="projects">1850+</span><span class="stats-strip__label" data-stat-label="projects">Projects Delivered</span></div>
+                <div class="stats-strip__item"><span class="stats-strip__value" data-stat="cmmi">Level 5</span><span class="stats-strip__label" data-stat-label="cmmi">CMMI Maturity</span></div>
+                <div class="stats-strip__item"><span class="stats-strip__value" data-stat="rating">4.9/5</span><span class="stats-strip__label" data-stat-label="rating">Average Review</span></div>
+            </div>
+        </div>
+    </section>
 
     <!-- Trusted Partners Section -->
     <section class="trusted-partners section">
@@ -190,6 +250,30 @@
         </div>
     </section>
 
+    <!-- Case studies (CMS CaseStudy model — GET /case-studies) -->
+    <section class="case-studies-home section" id="case-studies" aria-labelledby="case-studies-heading">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title" id="case-studies-heading">Case Studies</h2>
+                <p class="section-subtitle">Deep dives into challenges, solutions, and outcomes — aligned with how we engage on complex builds.</p>
+            </div>
+            <div class="case-studies-grid" id="caseStudiesHomeGrid"></div>
+        </div>
+    </section>
+
+    <!-- Industries (nav anchor #industries) -->
+    <section class="industries section" id="industries" aria-labelledby="industries-heading">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title" id="industries-heading">Industries We Serve</h2>
+                <p class="section-subtitle">Deep experience across regulated and high-growth sectors — shaped by your domain, delivered with our product and engineering playbooks.</p>
+            </div>
+            <div class="industries-grid" id="industriesGrid">
+                <!-- Published industries from GET /industries (Admin → Growth → Industries); fallback rendered by script if empty -->
+            </div>
+        </div>
+    </section>
+
     <!-- About Us Section -->
     <section class="about section" id="about">
         <div class="container">
@@ -205,28 +289,28 @@
                     <h3>Our Vision</h3>
                     <p>To become the world's most trusted technology partner, known for innovation, reliability, and transformative digital solutions that shape the future of business.</p>
 
-                    <div class="achievements">
-                        <div class="achievement-item">
-                            <h4>500+</h4>
-                            <p>Projects Delivered</p>
+                    <div class="achievements" id="aboutAchievements">
+                        <div class="achievement-item" data-about-stat="projects">
+                            <h4 data-about-value>500+</h4>
+                            <p data-about-label>Projects Delivered</p>
                         </div>
-                        <div class="achievement-item">
-                            <h4>200+</h4>
-                            <p>Happy Clients</p>
+                        <div class="achievement-item" data-about-stat="clients">
+                            <h4 data-about-value>200+</h4>
+                            <p data-about-label>Happy Clients</p>
                         </div>
-                        <div class="achievement-item">
-                            <h4>50+</h4>
-                            <p>Team Members</p>
+                        <div class="achievement-item" data-about-stat="team">
+                            <h4 data-about-value>50+</h4>
+                            <p data-about-label>Team Members</p>
                         </div>
-                        <div class="achievement-item">
-                            <h4>15+</h4>
-                            <p>Awards Won</p>
+                        <div class="achievement-item" data-about-stat="awards">
+                            <h4 data-about-value>15+</h4>
+                            <p data-about-label>Awards Won</p>
                         </div>
                     </div>
                 </div>
                 <div class="about-visual">
                     <!-- Team members will be loaded dynamically from admin panel -->
-                    <div class="team-grid">
+                    <div class="team-grid" id="team">
                         <!-- Content loaded via API -->
                     </div>
                 </div>
@@ -261,7 +345,7 @@
     </section>
 
     <!-- Technologies And Platforms Section -->
-    <section class="technologies-platforms section" id="products" aria-label="Technologies And Platforms We Use">
+    <section class="technologies-platforms section" id="technologies" aria-label="Technologies And Platforms We Use">
         <div class="container">
             <div class="technologies-header">
                 <h2 class="technologies-title">Technologies And Platforms We Use</h2>
@@ -310,36 +394,7 @@
                      role="tabpanel" 
                      aria-labelledby="frontend-tab"
                      tabindex="0">
-                    <div class="tech-logos-grid">
-                        <div class="tech-logo-item" tabindex="0">
-                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/angularjs/angularjs-original.svg" 
-                                 alt="AngularJS" 
-                                 class="tech-logo"
-                                 loading="lazy">
-                            <span class="tech-logo-name">AngularJS</span>
-                        </div>
-                        <div class="tech-logo-item" tabindex="0">
-                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nextjs/nextjs-original-wordmark.svg" 
-                                 alt="NextJS" 
-                                 class="tech-logo nextjs-logo"
-                                 loading="lazy">
-                            <span class="tech-logo-name">NextJS</span>
-                        </div>
-                        <div class="tech-logo-item" tabindex="0">
-                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vuejs/vuejs-original.svg" 
-                                 alt="VueJS" 
-                                 class="tech-logo"
-                                 loading="lazy">
-                            <span class="tech-logo-name">VueJS</span>
-                        </div>
-                        <div class="tech-logo-item" tabindex="0">
-                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" 
-                                 alt="ReactJS" 
-                                 class="tech-logo"
-                                 loading="lazy">
-                            <span class="tech-logo-name">ReactJS</span>
-                        </div>
-                    </div>
+                    <div class="tech-logos-grid" data-tech-tab="frontend"></div>
                 </div>
                 <div class="tab-content" 
                      id="backend-panel" 
@@ -347,9 +402,7 @@
                      aria-labelledby="backend-tab"
                      aria-hidden="true"
                      tabindex="-1">
-                    <div class="tech-logos-grid">
-                        <!-- Back-end technologies can be added here -->
-                    </div>
+                    <div class="tech-logos-grid" data-tech-tab="backend"></div>
                 </div>
                 <div class="tab-content" 
                      id="mobile-panel" 
@@ -357,9 +410,7 @@
                      aria-labelledby="mobile-tab"
                      aria-hidden="true"
                      tabindex="-1">
-                    <div class="tech-logos-grid">
-                        <!-- Mobile technologies can be added here -->
-                    </div>
+                    <div class="tech-logos-grid" data-tech-tab="mobile"></div>
                 </div>
                 <div class="tab-content" 
                      id="ecommerce-panel" 
@@ -367,9 +418,7 @@
                      aria-labelledby="ecommerce-tab"
                      aria-hidden="true"
                      tabindex="-1">
-                    <div class="tech-logos-grid">
-                        <!-- Ecommerce technologies can be added here -->
-                    </div>
+                    <div class="tech-logos-grid" data-tech-tab="ecommerce"></div>
                 </div>
                 <div class="tab-content" 
                      id="analytics-panel" 
@@ -377,9 +426,7 @@
                      aria-labelledby="analytics-tab"
                      aria-hidden="true"
                      tabindex="-1">
-                    <div class="tech-logos-grid">
-                        <!-- Data Analytics technologies can be added here -->
-                    </div>
+                    <div class="tech-logos-grid" data-tech-tab="analytics"></div>
                 </div>
             </div>
             <div class="tech-stack-api-block" style="margin-top: var(--spacing-2xl); padding-top: var(--spacing-xl); border-top: 1px solid rgba(15, 17, 21, 0.08);">
@@ -408,12 +455,12 @@
         </div>
     </section>
 
-    <!-- Pricing Section -->
-    <section class="pricing section">
+    <!-- Pricing / engagement models (Admin → Pricing Plans) -->
+    <section class="pricing section" id="pricing">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">Pricing Plans</h2>
-                <p class="section-subtitle">Choose the plan that fits your needs</p>
+                <h2 class="section-title">Four Ways We Can Work Together</h2>
+                <p class="section-subtitle">Fixed scope, time &amp; materials, dedicated teams, or long-term partnership — pick what matches your roadmap.</p>
             </div>
             <!-- Pricing Plans will be loaded dynamically from admin panel -->
             <div class="pricing-grid">
@@ -431,26 +478,29 @@
             </div>
             <div class="contact-content">
                 <div class="contact-info">
-                    <div class="contact-item">
+                    <div class="contact-item" id="contactEmailBlock">
                         <div class="contact-icon">📧</div>
                         <div>
                             <h4>Email</h4>
-                            <p>hello@nullscape.com</p>
+                            <p data-contact-field="email">hello@nullscape.com</p>
                         </div>
                     </div>
-                    <div class="contact-item">
+                    <div class="contact-item" id="contactPhoneBlock">
                         <div class="contact-icon">📞</div>
                         <div>
                             <h4>Phone</h4>
-                            <p>+1 (555) 123-4567</p>
+                            <p data-contact-field="phone">+1 (555) 123-4567</p>
                         </div>
                     </div>
-                    <div class="contact-item">
+                    <div class="contact-item" id="contactAddressBlock">
                         <div class="contact-icon">📍</div>
                         <div>
                             <h4>Location</h4>
-                            <p>123 Tech Avenue, San Francisco, CA 94102</p>
+                            <p data-contact-field="address">123 Tech Avenue, San Francisco, CA 94102</p>
                         </div>
+                    </div>
+                    <div class="contact-offices" id="contactOffices" aria-label="Office locations">
+                        <!-- Optional: populated from global-settings.offices -->
                     </div>
                     <div class="contact-social">
                         <a href="#" class="social-link">WhatsApp</a>
@@ -529,8 +579,11 @@
                     <h4>Quick Links</h4>
                     <ul>
                         <li><a href="#home">Home</a></li>
+                        <li><a href="#custom-services">Services</a></li>
                         <li><a href="#portfolio">Solutions</a></li>
-                        <li><a href="#portfolio">Portfolio</a></li>
+                        <li><a href="#technologies">Technologies</a></li>
+                        <li><a href="#industries">Industries</a></li>
+                        <li><a href="portfolio.html">Portfolio</a></li>
                         <li><a href="#testimonials">Testimonials</a></li>
                         <li><a href="#about">About Us</a></li>
                     </ul>
@@ -538,11 +591,11 @@
                 <div class="footer-column">
                     <h4>Services</h4>
                     <ul>
-                        <li><a href="#">Mobile Development</a></li>
-                        <li><a href="#">Web Development</a></li>
-                        <li><a href="#">AI Solutions</a></li>
-                        <li><a href="#">Cloud Services</a></li>
-                        <li><a href="#">IT Consulting</a></li>
+                        <li><a href="#custom-services">Custom software</a></li>
+                        <li><a href="#portfolio">AI &amp; product delivery</a></li>
+                        <li><a href="#technologies">Platforms &amp; stack</a></li>
+                        <li><a href="#pricing">Plans &amp; engagement</a></li>
+                        <li><a href="#contact">Consulting</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
@@ -603,6 +656,7 @@
     <script src="/assets/js/utils.js"></script>
     <script src="/assets/js/api.js"></script>
     <script src="/assets/js/cms-renderer.js"></script>
+    <script src="/assets/js/site-nav.js" defer></script>
     <script src="/assets/js/script.js" defer></script>
 </body>
 </html>

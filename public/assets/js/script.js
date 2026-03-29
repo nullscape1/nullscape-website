@@ -82,56 +82,89 @@ if (header) {
 
 const navToggle = document.getElementById('navToggle');
 const navMenu = document.getElementById('navMenu');
-const navLinks = document.querySelectorAll('.nav-link');
 
-if (navToggle && navMenu) {
-    navToggle.addEventListener('click', () => {
-        navMenu.classList.toggle('active');
-        navToggle.classList.toggle('active');
-        document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+function setNavMenuOpen(open) {
+    if (!navMenu || !navToggle) return;
+    navMenu.classList.toggle('active', open);
+    navToggle.classList.toggle('active', open);
+    navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    navToggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    document.body.style.overflow = open ? 'hidden' : '';
+}
+
+const headerEl = document.getElementById('header');
+
+if (navToggle && navMenu && headerEl) {
+    navToggle.addEventListener('click', e => {
+        e.stopPropagation();
+        setNavMenuOpen(!navMenu.classList.contains('active'));
     });
 
-    // Close menu when clicking on a link
-    navLinks.forEach(link => {
+    headerEl.querySelectorAll('a[href]').forEach(link => {
         link.addEventListener('click', () => {
-            navMenu.classList.remove('active');
-            navToggle.classList.remove('active');
-            document.body.style.overflow = '';
+            setNavMenuOpen(false);
+            navMenu.querySelectorAll('.nav-item--mega.is-open').forEach(item => {
+                item.classList.remove('is-open');
+                const t = item.querySelector('.nav-link--trigger');
+                if (t) t.setAttribute('aria-expanded', 'false');
+            });
         });
     });
 
-    // Close menu on outside click
     document.addEventListener('click', (e) => {
-        if (!navMenu.contains(e.target) && !navToggle.contains(e.target)) {
-            navMenu.classList.remove('active');
-            navToggle.classList.remove('active');
-            document.body.style.overflow = '';
+        const inActions = e.target.closest && e.target.closest('.nav-actions');
+        if (!navMenu.contains(e.target) && !navToggle.contains(e.target) && !inActions) {
+            setNavMenuOpen(false);
         }
     });
 }
 
 // ============================================
-// Active Navigation Link (Optimized)
+// Active Navigation Link (sections + #team)
 // ============================================
 
-const sections = document.querySelectorAll('section[id]');
+const sections = document.querySelectorAll('section[id], #team');
+
+function clearNavActive() {
+    document
+        .querySelectorAll(
+            '#header [data-nav-anchor].active, #navMenu .nav-link.active, #navMenu .nav-link--trigger.active'
+        )
+        .forEach(el => {
+            el.classList.remove('active');
+        });
+}
 
 function highlightNavigation() {
     const scrollY = window.pageYOffset + 150;
-    
-    sections.forEach(section => {
-        const sectionHeight = section.offsetHeight;
-        const sectionTop = section.offsetTop;
-        const sectionId = section.getAttribute('id');
-        const navLink = document.querySelector(`.nav-link[href="#${sectionId}"]`);
-        
-        if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
-            navLinks.forEach(link => link.classList.remove('active'));
-            if (navLink) {
-                navLink.classList.add('active');
+    let currentId = null;
+
+    Array.from(sections)
+        .reverse()
+        .forEach(section => {
+            const sectionHeight = section.offsetHeight;
+            const sectionTop = section.offsetTop;
+            const sectionId = section.getAttribute('id');
+            if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
+                currentId = sectionId;
             }
-        }
-    });
+        });
+
+    clearNavActive();
+    if (!currentId) return;
+
+    let anchorId = currentId === 'team' ? 'about' : currentId;
+    const byData =
+        document.querySelector(`#header [data-nav-anchor="${currentId}"]`) ||
+        document.querySelector(`#navMenu [data-nav-anchor="${currentId}"]`) ||
+        document.querySelector(`#navMenu [data-nav-anchor="${anchorId}"]`);
+    if (byData) {
+        byData.classList.add('active');
+    }
+    const navLink = document.querySelector(`#navMenu a.nav-link[href="#${currentId}"]`);
+    if (navLink) {
+        navLink.classList.add('active');
+    }
 }
 
 window.addEventListener('scroll', throttle(highlightNavigation, 100));
@@ -140,31 +173,52 @@ window.addEventListener('scroll', throttle(highlightNavigation, 100));
 // Smooth Scroll (Enhanced)
 // ============================================
 
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function(e) {
-        const href = this.getAttribute('href');
-        if (href === '#' || !href) return;
-        
-        e.preventDefault();
-        const target = document.querySelector(href);
-        
-        if (target) {
-            const headerHeight = header?.offsetHeight || 80;
-            const targetPosition = target.offsetTop - headerHeight;
-            
-            window.scrollTo({
-                top: targetPosition,
-                behavior: 'smooth'
-            });
-            
-            // Close mobile menu if open
-            if (navMenu?.classList.contains('active')) {
-                navMenu.classList.remove('active');
-                navToggle?.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-        }
+function activateServiceCategoryBySlug(slug) {
+    if (!slug) return;
+    const el = document.querySelector('.service-category-item[data-category="' + slug.replace(/"/g, '') + '"]');
+    if (el) {
+        el.click();
+    }
+}
+
+document.body.addEventListener('click', function (e) {
+    const anchor = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!anchor) return;
+
+    const href = anchor.getAttribute('href');
+    if (!href || href === '#' || href.length < 2) return;
+
+    if (e.defaultPrevented) return;
+    if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+    if (typeof e.button === 'number' && e.button !== 0) return;
+
+    const id = href.slice(1);
+    if (!id) return;
+
+    const target = document.getElementById(id);
+    if (!target) return;
+
+    e.preventDefault();
+    const headerHeight = header?.offsetHeight || 80;
+    const targetPosition = target.offsetTop - headerHeight;
+
+    window.scrollTo({
+        top: targetPosition,
+        behavior: 'smooth'
     });
+
+    const slug = anchor.getAttribute('data-category-slug');
+    if (slug && href === '#custom-services') {
+        setTimeout(() => activateServiceCategoryBySlug(slug), 450);
+    }
+
+    if (navMenu?.classList.contains('active')) {
+        setNavMenuOpen(false);
+    }
+
+    if (typeof window.closeAllMegaNav === 'function') {
+        window.closeAllMegaNav();
+    }
 });
 
 // ============================================
@@ -1066,40 +1120,250 @@ async function loadTeam() {
     });
 }
 
-// Render Tech Stack on homepage (with skeleton loader)
+/** Map Admin tech category → homepage tab data-tech-tab value */
+function techCategoryToTabKey(category) {
+    const c = String(category || 'Other').trim();
+    if (c === 'Frontend') return 'frontend';
+    if (c === 'Backend' || c === 'Database' || c === 'Cloud' || c === 'DevOps') return 'backend';
+    if (c === 'Mobile') return 'mobile';
+    if (c === 'Ecommerce') return 'ecommerce';
+    if (c === 'DataAnalytics') return 'analytics';
+    return null;
+}
+
+function renderTechLogoItem(tech) {
+    const name = escapeHtml(tech.name || '');
+    const icon = tech.icon ? escapeHtml(tech.icon) : '';
+    const initial = name.replace(/[^a-zA-Z0-9]/g, '').slice(0, 2).toUpperCase() || 'TS';
+    const img = icon
+        ? `<img src="${icon}" alt="${name}" class="tech-logo" loading="lazy" decoding="async">`
+        : `<span class="tech-logo-fallback" aria-hidden="true">${initial}</span>`;
+    return `
+        <div class="tech-logo-item will-animate" tabindex="0">
+            ${img}
+            <span class="tech-logo-name">${name}</span>
+        </div>`;
+}
+
+/** Apply optional nested object from GET /global-settings (e.g. key <code>site</code>) */
+function applySiteSettingsFromGlobal(gs) {
+    if (!gs || typeof gs !== 'object') return;
+    const site = gs.site && typeof gs.site === 'object' ? gs.site : gs;
+
+    if (site.stats && typeof site.stats === 'object') {
+        const st = site.stats;
+        const labels = st.labels && typeof st.labels === 'object' ? st.labels : {};
+        const map = [
+            ['clients', st.clients, labels.clients],
+            ['projects', st.projects, labels.projects],
+            ['cmmi', st.cmmi, labels.cmmi],
+            ['rating', st.rating, labels.rating],
+        ];
+        map.forEach(([key, val, lab]) => {
+            if (val != null && val !== '') {
+                const vEl = document.querySelector(`[data-stat="${key}"]`);
+                if (vEl) vEl.textContent = String(val);
+            }
+            if (lab != null && lab !== '') {
+                const lEl = document.querySelector(`[data-stat-label="${key}"]`);
+                if (lEl) lEl.textContent = String(lab);
+            }
+        });
+        const aboutMap = [
+            ['projects', st.aboutProjects, st.aboutProjectsLabel],
+            ['clients', st.aboutClients, st.aboutClientsLabel],
+            ['team', st.aboutTeam, st.aboutTeamLabel],
+            ['awards', st.aboutAwards, st.aboutAwardsLabel],
+        ];
+        aboutMap.forEach(([attr, num, lab]) => {
+            if (num == null && lab == null) return;
+            const block = document.querySelector(`[data-about-stat="${attr}"]`);
+            if (!block) return;
+            if (num != null && num !== '') {
+                const hv = block.querySelector('[data-about-value]');
+                if (hv) hv.textContent = String(num);
+            }
+            if (lab != null && lab !== '') {
+                const pl = block.querySelector('[data-about-label]');
+                if (pl) pl.textContent = String(lab);
+            }
+        });
+    }
+
+    if (site.contact && typeof site.contact === 'object') {
+        const c = site.contact;
+        const emailEl = document.querySelector('[data-contact-field="email"]');
+        const phoneEl = document.querySelector('[data-contact-field="phone"]');
+        const addrEl = document.querySelector('[data-contact-field="address"]');
+        if (c.email && emailEl) emailEl.textContent = String(c.email);
+        if (c.phone && phoneEl) phoneEl.textContent = String(c.phone);
+        if (c.address && addrEl) addrEl.textContent = String(c.address);
+    }
+
+    const officesEl = document.getElementById('contactOffices');
+    if (officesEl && Array.isArray(site.offices) && site.offices.length) {
+        officesEl.innerHTML = site.offices.map((o) => {
+            const title = escapeHtml(o.title || o.name || 'Office');
+            const lines = Array.isArray(o.lines) ? o.lines : (o.line ? [o.line] : []);
+            const body = lines.map((line) => `<li>${escapeHtml(String(line))}</li>`).join('');
+            const phone = o.phone ? `<p class="contact-office__phone">${escapeHtml(String(o.phone))}</p>` : '';
+            const email = o.email ? `<p class="contact-office__email"><a href="mailto:${escapeHtml(String(o.email))}">${escapeHtml(String(o.email))}</a></p>` : '';
+            return `<div class="contact-office"><h4 class="contact-office__title">${title}</h4><ul class="contact-office__lines">${body}</ul>${phone}${email}</div>`;
+        }).join('');
+    }
+}
+
+async function loadSiteSettings() {
+    const gs = await fetchJson('/global-settings');
+    applySiteSettingsFromGlobal(gs);
+}
+
+async function loadIndustries() {
+    const grid = document.getElementById('industriesGrid');
+    if (!grid) return;
+
+    const data = await fetchJson('/industries?limit=24');
+    const items = data && Array.isArray(data.items) ? data.items : [];
+
+    const fallback = `
+        <article class="industry-card"><h3 class="industry-card__title">FinTech &amp; Banking</h3>
+        <p class="industry-card__text">Secure payments, lending workflows, and compliance-aware architectures.</p>
+        <a href="#contact" class="industry-card__link">Discuss a project</a></article>
+        <article class="industry-card"><h3 class="industry-card__title">Healthcare &amp; Life Sciences</h3>
+        <p class="industry-card__text">Patient-centric apps, integrations, and data handling with privacy in mind.</p>
+        <a href="#contact" class="industry-card__link">Discuss a project</a></article>
+        <article class="industry-card"><h3 class="industry-card__title">EdTech &amp; Media</h3>
+        <p class="industry-card__text">Engagement, subscriptions, and content platforms that scale with your audience.</p>
+        <a href="#contact" class="industry-card__link">Discuss a project</a></article>
+        <article class="industry-card"><h3 class="industry-card__title">Retail &amp; E‑commerce</h3>
+        <p class="industry-card__text">Storefronts, ops tooling, and analytics to grow conversion and repeat buyers.</p>
+        <a href="#contact" class="industry-card__link">Discuss a project</a></article>`;
+
+    if (items.length === 0) {
+        grid.innerHTML = fallback;
+        return;
+    }
+
+    grid.innerHTML = items.map((ind) => {
+        const title = escapeHtml(ind.name || 'Industry');
+        const c = ind.content && typeof ind.content === 'object' ? ind.content : {};
+        const textRaw = c.summary || c.description || ind.category || '';
+        const text = textRaw ? escapeHtml(String(textRaw)) : 'Discuss how we can help in this space.';
+        return `
+            <article class="industry-card will-animate">
+                <h3 class="industry-card__title">${title}</h3>
+                <p class="industry-card__text">${text}</p>
+                <a href="#contact" class="industry-card__link">Discuss a project</a>
+            </article>`;
+    }).join('');
+
+    grid.querySelectorAll('.industry-card').forEach((el) => animationObserver.observe(el));
+}
+
+async function loadCaseStudiesHome() {
+    const grid = document.getElementById('caseStudiesHomeGrid');
+    if (!grid) return;
+
+    grid.innerHTML = Array(3).fill(0).map(() => '<div class="skeleton-tech-item" style="min-height:180px;border-radius:12px;"></div>').join('');
+
+    const data = await fetchJson('/case-studies?limit=6');
+    const items = data && Array.isArray(data.items) ? data.items : [];
+
+    if (items.length === 0) {
+        grid.innerHTML = `
+            <div class="empty-state-card" style="grid-column: 1 / -1;">
+                <div class="empty-state-icon">📋</div>
+                <h3>Case studies coming soon</h3>
+                <p>Publish case studies from the admin panel (Growth CMS → Case Studies) to show them here.</p>
+            </div>`;
+        return;
+    }
+
+    grid.innerHTML = items.map((cs) => {
+        const rawTitle = cs.title || 'Case study';
+        const title = escapeHtml(rawTitle);
+        const industry = escapeHtml(cs.industry || '');
+        const sum = escapeHtml(cs.summary || '');
+        const content = cs.content && typeof cs.content === 'object' ? cs.content : {};
+        const domain = content.clientDomain ? escapeHtml(String(content.clientDomain)) : '';
+        const img = cs.featuredImage ? escapeHtml(cs.featuredImage) : '';
+        const hero = img
+            ? `<div class="case-study-card__media"><img src="${img}" alt="" loading="lazy" decoding="async"></div>`
+            : `<div class="case-study-card__media case-study-card__media--placeholder" aria-hidden="true"><span>${escapeHtml(rawTitle.slice(0, 1))}</span></div>`;
+        const metaParts = [];
+        if (domain) metaParts.push(`<strong>Client domain:</strong> ${domain}`);
+        if (industry) metaParts.push(`<strong>Industry:</strong> ${industry}`);
+        const meta = metaParts.length ? `<p class="case-study-card__meta">${metaParts.join(' · ')}</p>` : '';
+        const excerpt = sum
+            ? `<p class="case-study-card__excerpt">${sum}</p>`
+            : '';
+        return `
+            <article class="case-study-card will-animate">
+                ${hero}
+                <div class="case-study-card__body">
+                    <h3 class="case-study-card__title">${title}</h3>
+                    ${meta}
+                    ${excerpt}
+                </div>
+            </article>`;
+    }).join('');
+
+    grid.querySelectorAll('.case-study-card').forEach((el) => animationObserver.observe(el));
+}
+
+// Render Tech Stack on homepage + fill technology tabs (Admin categories drive tab columns)
 async function loadTechStack() {
-    const container = document.querySelector('.tech-grid');
-    if (!container) return;
-    
-    // Show skeleton loader
-    container.innerHTML = Array(12).fill(0).map(() => '<div class="skeleton-tech-item"></div>').join('');
-    
+    const summary = document.querySelector('.tech-grid');
     const data = await fetchJson('/tech-stack?status=active&limit=100&sort=order');
-    
+
+    if (summary) {
+        summary.innerHTML = Array(12).fill(0).map(() => '<div class="skeleton-tech-item"></div>').join('');
+    }
+
     if (!data?.items || data.items.length === 0) {
-        container.innerHTML = `
+        if (summary) {
+            summary.innerHTML = `
             <div class="empty-state-card">
                 <div class="empty-state-icon">💻</div>
                 <h3>No Tech Stack Items</h3>
                 <p>Tech stack items will be displayed here once they are added through the admin panel.</p>
-            </div>
-        `;
+            </div>`;
+        }
+        document.querySelectorAll('.tech-logos-grid[data-tech-tab]').forEach((el) => {
+            el.innerHTML = '<p class="tech-tab-empty">Add technologies in Admin → Tech Stack.</p>';
+        });
         return;
     }
-    
-    container.innerHTML = data.items.map(tech => {
-        const name = escapeHtml(tech.name || '');
-        const icon = escapeHtml(tech.icon || '');
-        return `
+
+    const items = data.items;
+
+    if (summary) {
+        summary.innerHTML = items.map((tech) => {
+            const name = escapeHtml(tech.name || '');
+            const icon = escapeHtml(tech.icon || '');
+            return `
             <div class="tech-item will-animate">
                 ${icon ? `<img src="${icon}" alt="${name}" loading="lazy" style="width:32px;height:32px;margin-right:8px;vertical-align:middle;border-radius:4px;">` : ''}
                 ${name}
-            </div>
-        `;
-    }).join('');
-    
-    container.querySelectorAll('.tech-item').forEach(item => {
-        animationObserver.observe(item);
+            </div>`;
+        }).join('');
+        summary.querySelectorAll('.tech-item').forEach((item) => animationObserver.observe(item));
+    }
+
+    const buckets = { frontend: [], backend: [], mobile: [], ecommerce: [], analytics: [] };
+    items.forEach((tech) => {
+        const tab = techCategoryToTabKey(tech.category);
+        if (tab && buckets[tab]) buckets[tab].push(tech);
+    });
+
+    Object.keys(buckets).forEach((tab) => {
+        const el = document.querySelector(`.tech-logos-grid[data-tech-tab="${tab}"]`);
+        if (!el) return;
+        const list = buckets[tab];
+        el.innerHTML = list.length
+            ? list.map((t) => renderTechLogoItem(t)).join('')
+            : '<p class="tech-tab-empty">No items in this category yet.</p>';
+        el.querySelectorAll('.tech-logo-item').forEach((node) => animationObserver.observe(node));
     });
 }
 
@@ -1348,29 +1612,47 @@ function bindServiceCategoryListOnce() {
 
 async function loadServiceCategories() {
     const categoryList = bindServiceCategoryListOnce();
-    if (!categoryList) return;
-    
+    const navMega = document.getElementById('navMegaServiceLinks');
+    if (!categoryList && !navMega) return;
+
     console.log('[Service Categories] Loading categories...');
     const data = await fetchJson('/service-categories?status=active&limit=100&sort=order');
     console.log('[Service Categories] Data received:', data);
-    
+
     if (!data?.items || data.items.length === 0) {
         console.log('[Service Categories] No categories found');
         return;
     }
-    
-    categoryList.innerHTML = data.items.map((cat, index) => {
-        const name = escapeHtml(cat.name || '');
-        const slug = escapeHtml(cat.slug || name.toLowerCase().replace(/\s+/g, '-'));
-        const isActive = index === 0 ? 'active' : '';
-        if (index === 0) {
-            currentServiceCategory = slug;
-        }
-        return `<li class="service-category-item ${isActive}" data-category="${slug}" data-category-name="${name}">${name}</li>`;
-    }).join('');
-    
-    // Trigger filter for first active category if services are already loaded
-    if (allServices && allServices.length > 0) {
+
+    if (categoryList) {
+        categoryList.innerHTML = data.items.map((cat, index) => {
+            const name = escapeHtml(cat.name || '');
+            const slug = escapeHtml(cat.slug || name.toLowerCase().replace(/\s+/g, '-'));
+            const isActive = index === 0 ? 'active' : '';
+            if (index === 0) {
+                currentServiceCategory = slug;
+            }
+            return `<li class="service-category-item ${isActive}" data-category="${slug}" data-category-name="${name}">${name}</li>`;
+        }).join('');
+    }
+
+    if (navMega) {
+        const prefix = document.body.classList.contains('ns-page-home') ? '' : 'index.html';
+        const hash = prefix ? prefix + '#custom-services' : '#custom-services';
+        navMega.innerHTML = data.items
+            .slice(0, 10)
+            .map(cat => {
+                const name = escapeHtml(cat.name || '');
+                const slug = String(cat.slug || (cat.name || '').toLowerCase().replace(/\s+/g, '-')).replace(
+                    /"/g,
+                    ''
+                );
+                return `<li><a href="${hash}" class="nav-mega-link" data-category-slug="${slug}">${name}</a></li>`;
+            })
+            .join('');
+    }
+
+    if (categoryList && allServices && allServices.length > 0) {
         const firstActive = categoryList.querySelector('.service-category-item.active');
         if (firstActive) {
             const category = firstActive.getAttribute('data-category');
@@ -1692,11 +1974,18 @@ window.refreshWebsiteContent = async function() {
         const loadPromises = [];
         
         // Homepage content
+        loadPromises.push(loadSiteSettings());
+        if (document.getElementById('industriesGrid')) {
+            loadPromises.push(loadIndustries());
+        }
+        if (document.getElementById('caseStudiesHomeGrid')) {
+            loadPromises.push(loadCaseStudiesHome());
+        }
         if (document.querySelector('.partners-grid')) {
             loadPromises.push(loadPartners());
         }
-        // Load service categories first, then services
-        if (document.getElementById('serviceCategoryList')) {
+        // Load service categories first, then services (sidebar and/or header mega menu)
+        if (document.getElementById('serviceCategoryList') || document.getElementById('navMegaServiceLinks')) {
             loadPromises.push(loadServiceCategories());
         }
         if (document.getElementById('customServicesGrid')) {
@@ -1808,7 +2097,9 @@ window.addEventListener('DOMContentLoaded', async () => {
     
     // Initial content load
     await window.refreshWebsiteContent();
-    
+
+    highlightNavigation();
+
     // Start auto-refresh (every 5 minutes)
     // Uncomment the line below to enable auto-refresh
     // startAutoRefresh(5);
@@ -1848,19 +2139,6 @@ preloadLink.rel = 'preload';
 preloadLink.as = 'style';
 preloadLink.href = 'styles.css';
 document.head.appendChild(preloadLink);
-
-// ============================================
-// Accessibility: Keyboard navigation
-// ============================================
-
-document.addEventListener('keydown', (e) => {
-    // ESC to close mobile menu
-    if (e.key === 'Escape' && navMenu?.classList.contains('active')) {
-        navMenu.classList.remove('active');
-        navToggle?.classList.remove('active');
-        document.body.style.overflow = '';
-    }
-});
 
 // ============================================
 // Performance: Reduce motion for users who prefer it

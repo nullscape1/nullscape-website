@@ -2,29 +2,9 @@
 // Nullscape Website - Optimized & Enhanced
 // ============================================
 
-// Performance: Debounce and throttle utilities
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}
-
-function throttle(func, limit) {
-    let inThrottle;
-    return function(...args) {
-        if (!inThrottle) {
-            func.apply(this, args);
-            inThrottle = true;
-            setTimeout(() => inThrottle = false, limit);
-        }
-    };
-}
+// Use shared utils (load utils.js before this file)
+var debounce = window.debounce;
+var throttle = window.throttle;
 
 // ============================================
 // Loading Animation (Optimized)
@@ -222,70 +202,77 @@ document.querySelectorAll('.service-card, .solution-card, .portfolio-card, .valu
 let currentTestimonial = 0;
 let testimonialInterval;
 
+function getTestimonialCardCount() {
+    return document.querySelectorAll('.testimonials-carousel .testimonial-card').length;
+}
+
+function showTestimonialSlide(index) {
+    const cards = document.querySelectorAll('.testimonials-carousel .testimonial-card');
+    const carouselDots = document.querySelector('.carousel-dots');
+    if (cards.length === 0) return;
+    const i = ((index % cards.length) + cards.length) % cards.length;
+    cards.forEach((card, j) => {
+        card.classList.toggle('active', j === i);
+    });
+    if (carouselDots) {
+        carouselDots.querySelectorAll('.carousel-dot').forEach((dot, j) => {
+            dot.classList.toggle('active', j === i);
+        });
+    }
+    currentTestimonial = i;
+}
+
+function advanceTestimonial(delta) {
+    const n = getTestimonialCardCount();
+    if (n === 0) return;
+    showTestimonialSlide(currentTestimonial + delta);
+}
+
+function resetTestimonialAutoPlay() {
+    clearInterval(testimonialInterval);
+    testimonialInterval = setInterval(() => {
+        advanceTestimonial(1);
+    }, 5000);
+}
+
 function initTestimonials() {
-    const testimonialCards = document.querySelectorAll('.testimonial-card');
+    if (getTestimonialCardCount() === 0) return;
+
     const carouselDots = document.querySelector('.carousel-dots');
     const prevBtn = document.getElementById('prevTestimonial');
     const nextBtn = document.getElementById('nextTestimonial');
-    
-    if (testimonialCards.length === 0) return;
-    
-    function showTestimonial(index) {
-        testimonialCards.forEach((card, i) => {
-            card.classList.toggle('active', i === index);
-        });
-        
-        if (carouselDots) {
-            carouselDots.querySelectorAll('.carousel-dot').forEach((dot, i) => {
-                dot.classList.toggle('active', i === index);
-            });
-        }
-        
-        currentTestimonial = index;
-    }
-    
-    function nextTestimonial() {
-        const next = (currentTestimonial + 1) % testimonialCards.length;
-        showTestimonial(next);
-    }
-    
-    function prevTestimonial() {
-        const prev = (currentTestimonial - 1 + testimonialCards.length) % testimonialCards.length;
-        showTestimonial(prev);
-    }
-    
-    if (nextBtn) nextBtn.addEventListener('click', () => {
-        nextTestimonial();
-        resetAutoPlay();
-    });
-    
-    if (prevBtn) prevBtn.addEventListener('click', () => {
-        prevTestimonial();
-        resetAutoPlay();
-    });
-    
+
     if (carouselDots) {
         carouselDots.querySelectorAll('.carousel-dot').forEach((dot, index) => {
             dot.addEventListener('click', () => {
-                showTestimonial(index);
-                resetAutoPlay();
+                showTestimonialSlide(index);
+                resetTestimonialAutoPlay();
             });
         });
     }
-    
-    function resetAutoPlay() {
-        clearInterval(testimonialInterval);
-        testimonialInterval = setInterval(nextTestimonial, 5000);
+
+    if (nextBtn && nextBtn.dataset.nsTestimonialNavBound !== '1') {
+        nextBtn.dataset.nsTestimonialNavBound = '1';
+        nextBtn.addEventListener('click', () => {
+            advanceTestimonial(1);
+            resetTestimonialAutoPlay();
+        });
     }
-    
-    // Auto-play
-    resetAutoPlay();
-    
-    // Pause on hover
+    if (prevBtn && prevBtn.dataset.nsTestimonialNavBound !== '1') {
+        prevBtn.dataset.nsTestimonialNavBound = '1';
+        prevBtn.addEventListener('click', () => {
+            advanceTestimonial(-1);
+            resetTestimonialAutoPlay();
+        });
+    }
+
+    resetTestimonialAutoPlay();
+
     const carousel = document.querySelector('.testimonials-carousel');
-    if (carousel) {
+    if (carousel && carousel.dataset.nsTestimonialHoverBound !== '1') {
+        carousel.dataset.nsTestimonialHoverBound = '1';
         carousel.addEventListener('mouseenter', () => clearInterval(testimonialInterval));
-        carousel.addEventListener('mouseleave', resetAutoPlay);
+        carousel.addEventListener('mouseleave', resetTestimonialAutoPlay);
     }
 }
 
@@ -535,133 +522,92 @@ function showErrorMessage(form, message) {
 // ============================================
 // Dynamic Content from Admin Backend (CMS)
 // ============================================
+// API_BASE, fetchJson, escapeHtml, createSkeletonLoader from config.js, api.js, utils.js
+var API_BASE = window.API_BASE;
+var fetchJson = window.fetchJson;
+var escapeHtml = window.escapeHtml;
+var createSkeletonLoader = window.createSkeletonLoader;
 
-// Config: set window.NULLSCAPE_API_BASE in HTML to override
-// Production: https://nullscape-backend.onrender.com/api/v1
-// Development: http://localhost:4000/api/v1
-const API_BASE = window.NULLSCAPE_API_BASE || (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:4000/api/v1' : 'https://nullscape-backend.onrender.com/api/v1');
-
-// Production mode detection - suppress console.log in production
-const isProduction = typeof window !== 'undefined' && 
-                     window.location.hostname !== 'localhost' && 
-                     window.location.hostname !== '127.0.0.1' &&
-                     !window.location.hostname.startsWith('192.168.') &&
-                     !window.location.hostname.endsWith('.local');
-
-// Console wrapper - only in production
-if (isProduction && typeof window !== 'undefined' && window.console) {
-  const originalConsole = { ...window.console };
-  window.console.log = () => {};
-  window.console.debug = () => {};
-  window.console.info = () => {};
-  // Keep error and warn for critical issues
+/** Aligns with BlogCategory slug rules — must match filter button `data-filter` values */
+function slugifyBlogCategoryKey(str) {
+    const s = String(str || '')
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-]/g, '');
+    return s || 'general';
 }
 
-async function fetchJson(path, options = {}, retries = 2) {
-    const url = `${API_BASE}${path}`;
-    
-    for (let attempt = 0; attempt <= retries; attempt++) {
-        try {
-            if (attempt > 0) {
-                console.log(`[API] Retry attempt ${attempt} for ${path}`);
-                // Wait before retry (exponential backoff)
-                await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
-            }
-            
-            console.log(`[API] Fetching: ${url}`);
-            const res = await fetch(url, {
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                ...options
-            });
-            
-            if (!res.ok) {
-                // Don't retry on 404 or 401 errors
-                if (res.status === 404 || res.status === 401) {
-                    console.warn(`[API] Request failed for ${path}: ${res.status} ${res.statusText}`);
-                    return null;
-                }
-                
-                // Retry on server errors (5xx) or network issues
-                if (attempt < retries && (res.status >= 500 || res.status === 0)) {
-                    console.warn(`[API] Server error ${res.status}, will retry...`);
-                    continue;
-                }
-                
-                console.error(`[API] Request failed for ${path}: ${res.status} ${res.statusText}`);
-                if (res.status !== 404) {
-                    try {
-                        const errorText = await res.text();
-                        console.error(`[API] Error response:`, errorText);
-                    } catch (e) {
-                        // Ignore error reading response
-                    }
-                }
-                return null;
-            }
-            
-            const data = await res.json();
-            console.log(`[API] ✅ Success for ${path} (${data?.items?.length || 0} items)`);
-            return data;
-            
-        } catch (e) {
-            // Network errors - retry if attempts remaining
-            if (attempt < retries) {
-                console.warn(`[API] Network error (attempt ${attempt + 1}/${retries + 1}):`, e.message);
-                continue;
-            }
-            
-            console.error(`[API] ❌ Network error fetching ${path}:`, e.message);
-            console.error(`[API] API_BASE:`, API_BASE);
-            console.error(`[API] Full URL:`, url);
-            console.error(`[API] Make sure backend is running on ${API_BASE.replace('/api/v1', '')}`);
-            return null;
-        }
+/** Strip script tags from admin HTML before innerHTML (basic XSS hardening). */
+function sanitizeBlogBodyHtml(html) {
+    if (!html || typeof html !== 'string') return '';
+    const tpl = document.createElement('template');
+    tpl.innerHTML = html;
+    tpl.content.querySelectorAll('script').forEach((el) => el.remove());
+    return tpl.innerHTML;
+}
+
+/** Plain text from admin HTML/plain description (cards must not show raw tags). */
+function stripHtmlToPlainText(html) {
+    if (!html || typeof html !== 'string') return '';
+    const s = html.trim();
+    if (!s) return '';
+    if (!/<[a-z][\s\S]*>/i.test(s)) return s.replace(/\s+/g, ' ').trim();
+    const tpl = document.createElement('template');
+    tpl.innerHTML = s;
+    tpl.content.querySelectorAll('script, style').forEach((el) => el.remove());
+    return (tpl.textContent || '').replace(/\s+/g, ' ').trim();
+}
+
+function truncatePortfolioExcerpt(text, maxLen) {
+    const max = maxLen || 220;
+    const t = String(text || '').trim();
+    if (!t) return '';
+    if (t.length <= max) return t;
+    const cut = t.slice(0, max);
+    const lastSpace = cut.lastIndexOf(' ');
+    const out = (lastSpace > 32 ? cut.slice(0, lastSpace) : cut).trim();
+    return out + '…';
+}
+
+/** Summary line for portfolio cards — matches admin description/solution/problem without escaped HTML. */
+function portfolioCardExcerpt(project) {
+    const sources = [project.description, project.solution, project.problem];
+    for (const raw of sources) {
+        if (raw == null || raw === '') continue;
+        const plain = stripHtmlToPlainText(String(raw));
+        if (plain) return truncatePortfolioExcerpt(plain, 220);
     }
-    
-    return null;
+    return '';
 }
 
-function escapeHtml(str) {
-    return String(str || '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
+function portfolioCategoryFilterSlug(cat) {
+    if (cat && cat.slug && String(cat.slug).trim()) {
+        return String(cat.slug).trim().toLowerCase().replace(/[^a-z0-9-]/g, '') || 'category';
+    }
+    return portfolioCategoryFilterSlugFromName(cat && cat.name);
 }
 
-// Skeleton loader HTML
-function createSkeletonLoader(count = 3, type = 'card') {
-    const skeletons = Array(count).fill(0).map(() => {
-        if (type === 'card') {
-            return `
-                <div class="skeleton-card">
-                    <div class="skeleton-image"></div>
-                    <div class="skeleton-content">
-                        <div class="skeleton-line skeleton-title"></div>
-                        <div class="skeleton-line"></div>
-                        <div class="skeleton-line skeleton-short"></div>
-                    </div>
-                </div>
-            `;
-        } else if (type === 'service') {
-            return `
-                <div class="skeleton-service">
-                    <div class="skeleton-icon"></div>
-                    <div class="skeleton-line skeleton-title"></div>
-                    <div class="skeleton-line"></div>
-                </div>
-            `;
-        }
-        return '';
-    }).join('');
-    return skeletons;
+function portfolioCategoryFilterSlugFromName(name) {
+    return String(name || '')
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-]/g, '') || 'category';
 }
 
-// loadServices function removed - Services section removed from website
+function wirePortfolioCardImages(container) {
+    if (!container) return;
+    container.querySelectorAll('.portfolio-card__img').forEach((img) => {
+        img.addEventListener('error', function onImgErr() {
+            this.removeEventListener('error', onImgErr);
+            const wrap = this.closest('.portfolio-image');
+            if (!wrap) return;
+            const initial = (wrap.getAttribute('data-initial') || '★').charAt(0).toUpperCase();
+            wrap.innerHTML = `<div class="portfolio-placeholder" role="img" aria-hidden="true"><span class="portfolio-placeholder__glyph">${escapeHtml(initial)}</span></div>`;
+        });
+    });
+}
 
 // Render Portfolio on homepage (with skeleton loader)
 async function loadPortfolio() {
@@ -709,55 +655,94 @@ async function loadPortfolio() {
     const categoriesData = await fetchJson('/portfolio-categories?status=active&limit=100');
     const categoryMap = new Map();
     if (categoriesData?.items) {
-        categoriesData.items.forEach(cat => {
-            const slug = cat.slug || cat.name.toLowerCase().replace(/\s+/g, '-');
-            categoryMap.set(cat.name, slug);
+        categoriesData.items.forEach((cat) => {
+            categoryMap.set(cat.name, portfolioCategoryFilterSlug(cat));
         });
     }
     
-    container.innerHTML = data.items.map(p => {
+    container.innerHTML = data.items.map((p) => {
         const name = escapeHtml(p.name);
-        // Use description if available (supports HTML), otherwise fallback to solution/problem
-        const description = p.description || p.solution || p.problem || '';
-        // Map category name to slug for filtering
-        const categoryName = p.category || 'Other';
-        const cat = categoryMap.get(categoryName) || categoryName.toLowerCase().replace(/\s+/g, '-');
-        const tags = Array.isArray(p.techStack) ? p.techStack.slice(0, 2) : [];
-        const img = Array.isArray(p.screenshots) && p.screenshots[0] ? escapeHtml(p.screenshots[0]) : null;
+        const categoryName = (p.category || 'Other').trim() || 'Other';
+        const categoryLabel = escapeHtml(categoryName);
+        const filterKey = categoryMap.get(categoryName) || portfolioCategoryFilterSlugFromName(categoryName);
+        const excerpt = portfolioCardExcerpt(p);
+        const excerptHtml = excerpt
+            ? `<p class="portfolio-description portfolio-description--excerpt">${escapeHtml(excerpt)}</p>`
+            : '<p class="portfolio-description portfolio-description--excerpt portfolio-description--muted">No description yet.</p>';
+        const rawStack = Array.isArray(p.techStack) ? p.techStack.filter((t) => String(t).trim()) : [];
+        const tags = rawStack.slice(0, 6);
+        const tagsHtml = tags.length
+            ? `<div class="portfolio-tags">${tags.map((t) => `<span>${escapeHtml(t)}</span>`).join('')}</div>`
+            : '';
+        const img = Array.isArray(p.screenshots) && p.screenshots[0] ? escapeHtml(String(p.screenshots[0]).trim()) : null;
+        const initial = String(p.name || '★').trim().charAt(0) || '★';
+        const initialAttr = escapeHtml(initial.toUpperCase());
+        const imgBlock = img
+            ? `<img class="portfolio-card__img" src="${img}" alt="${name}" loading="lazy" decoding="async">`
+            : `<div class="portfolio-placeholder" role="img" aria-hidden="true"><span class="portfolio-placeholder__glyph">${initialAttr}</span></div>`;
         return `
-            <div class="portfolio-card will-animate" data-category="${cat}">
-                <div class="portfolio-image">
-                    ${img ? `<img src="${img}" alt="${name}" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">` : `<div class="portfolio-placeholder"></div>`}
+            <article class="portfolio-card will-animate" data-category="${escapeHtml(filterKey)}">
+                <div class="portfolio-image" data-initial="${initialAttr}">
+                    ${imgBlock}
                 </div>
                 <div class="portfolio-content">
+                    <p class="portfolio-card__category">${categoryLabel}</p>
                     <h3>${name}</h3>
-                    <div class="portfolio-description">${description}</div>
-                    <div class="portfolio-tags">
-                        ${tags.map(t => `<span>${escapeHtml(t)}</span>`).join('')}
-                    </div>
+                    ${excerptHtml}
+                    ${tagsHtml}
                 </div>
-            </div>
+            </article>
         `;
     }).join('');
     
+    wirePortfolioCardImages(container);
+
     // Observe new cards for animation
-    container.querySelectorAll('.portfolio-card').forEach(card => {
+    container.querySelectorAll('.portfolio-card').forEach((card) => {
         animationObserver.observe(card);
     });
+}
+
+/** Safe https URL for img src (basic XSS hardening). */
+function safeHttpImageUrl(url) {
+    if (!url || typeof url !== 'string') return '';
+    const t = url.trim();
+    if (!/^https?:\/\//i.test(t)) return '';
+    return escapeHtml(t);
 }
 
 // Render Testimonials on homepage (with skeleton loader)
 async function loadTestimonials() {
     const container = document.querySelector('.testimonials-carousel');
-    const dotsWrap = document.querySelector('.carousel-dots');
-    if (!container || !dotsWrap) return;
-    
+    if (!container) return;
+
+    let dotsWrap = document.querySelector('.carousel-dots');
+    if (!dotsWrap && container.parentElement) {
+        dotsWrap = document.createElement('div');
+        dotsWrap.className = 'carousel-dots';
+        dotsWrap.setAttribute('role', 'tablist');
+        dotsWrap.setAttribute('aria-label', 'Testimonial slides');
+        container.after(dotsWrap);
+    }
+
     // Show skeleton loader
     container.innerHTML = createSkeletonLoader(3, 'card');
-    
+    if (dotsWrap) dotsWrap.innerHTML = '';
+
     const data = await fetchJson('/testimonials?status=active&limit=100');
-    
-    if (!data?.items || data.items.length === 0) {
+
+    if (!data) {
+        container.innerHTML = `
+            <div class="empty-state-card">
+                <div class="empty-state-icon">⚠️</div>
+                <h3>Unable to Load Testimonials</h3>
+                <p>Could not connect to the API. Please check if the backend is running.</p>
+            </div>
+        `;
+        return;
+    }
+
+    if (!data.items || data.items.length === 0) {
         container.innerHTML = `
             <div class="empty-state-card">
                 <div class="empty-state-icon">💬</div>
@@ -765,38 +750,46 @@ async function loadTestimonials() {
                 <p>Client testimonials will be displayed here once they are added through the admin panel.</p>
             </div>
         `;
+        if (dotsWrap) dotsWrap.innerHTML = '';
         return;
     }
-    
+
     container.innerHTML = data.items.map((t, idx) => {
         const name = escapeHtml(t.clientName);
         const review = escapeHtml(t.review || t.testimonial || '');
         const rating = Math.max(1, Math.min(5, Number(t.rating || 5)));
         const stars = '★★★★★'.slice(0, rating).padEnd(5, '☆');
-        const picture = escapeHtml(t.picture);
+        const picture = safeHttpImageUrl(t.picture);
+        const initial = escapeHtml(String(t.clientName || '?').trim().charAt(0).toUpperCase() || '?');
+        const avatarInner = picture
+            ? `<img src="${picture}" alt="" loading="lazy" decoding="async" width="60" height="60">`
+            : `<span class="testimonial-avatar__fallback">${initial}</span>`;
         return `
             <div class="testimonial-card ${idx === 0 ? 'active' : ''}">
                 <div class="testimonial-rating">${stars}</div>
                 <p class="testimonial-text">"${review}"</p>
                 <div class="testimonial-author">
-                    <div class="testimonial-avatar" ${picture ? `style="background-image:url('${picture}');background-size:cover;background-position:center;"` : ''}></div>
+                    <div class="testimonial-avatar">${avatarInner}</div>
                     <div><h4>${name}</h4></div>
                 </div>
             </div>
         `;
     }).join('');
-    
-    // Rebuild dots and wire controls
-    dotsWrap.innerHTML = '';
-    const cards = container.querySelectorAll('.testimonial-card');
-    cards.forEach((_, index) => {
-        const dot = document.createElement('div');
-        dot.className = 'carousel-dot' + (index === 0 ? ' active' : '');
-        dot.setAttribute('aria-label', `Go to testimonial ${index + 1}`);
-        dotsWrap.appendChild(dot);
-    });
-    
-    // Reinitialize carousel
+
+    if (dotsWrap) {
+        dotsWrap.innerHTML = '';
+        const cards = container.querySelectorAll('.testimonial-card');
+        cards.forEach((_, index) => {
+            const dot = document.createElement('button');
+            dot.type = 'button';
+            dot.className = 'carousel-dot' + (index === 0 ? ' active' : '');
+            dot.setAttribute('aria-label', `Go to testimonial ${index + 1}`);
+            dot.setAttribute('role', 'tab');
+            dotsWrap.appendChild(dot);
+        });
+    }
+
+    currentTestimonial = 0;
     initTestimonials();
 }
 
@@ -813,7 +806,7 @@ async function loadBlogList() {
     // Show skeleton loader
     grid.innerHTML = createSkeletonLoader(6, 'card');
     
-    const data = await fetchJson('/blog?status=published&limit=12');
+    const data = await fetchJson('/blog?status=published&limit=12&sort=-publishedAt');
     console.log('[Blog] Data received:', data);
     
     if (!data) {
@@ -846,27 +839,32 @@ async function loadBlogList() {
     grid.innerHTML = data.items.map(post => {
         const title = escapeHtml(post.title || 'Untitled');
         const desc = escapeHtml(post.description || '');
-        const date = post.createdAt ? new Date(post.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : '';
+        const dateRaw = post.publishedAt || post.createdAt;
+        const date = dateRaw ? new Date(dateRaw).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : '';
         const contentLength = (post.contentHtml || '').length;
         const read = contentLength > 0 ? Math.max(3, Math.min(10, Math.round(contentLength / 1200))) + ' min read' : '1 min read';
-        const tag = Array.isArray(post.tags) && post.tags.length > 0 && post.tags[0] ? escapeHtml(post.tags[0]) : (post.category || 'General');
+        const rawCategory = (post.category || '').trim();
+        const rawTag = Array.isArray(post.tags) && post.tags[0] ? String(post.tags[0]).trim() : '';
+        const categoryFilterKey = slugifyBlogCategoryKey(rawCategory || rawTag || 'general');
+        const categoryLabel = escapeHtml(rawCategory || rawTag || 'General');
         const img = post.thumbnail ? escapeHtml(post.thumbnail) : null;
-        const categorySlug = tag.toLowerCase().replace(/\s+/g, '-');
+        const slug = post.slug ? encodeURIComponent(post.slug) : '';
+        const postHref = slug ? `blog-post.html?slug=${slug}` : 'blog.html';
         
         return `
-            <article class="blog-card will-animate" data-category="${categorySlug}">
+            <article class="blog-card will-animate" data-category="${categoryFilterKey}">
                 <div class="blog-image">
                     ${img ? `<img src="${img}" alt="${title}" loading="lazy" style="width:100%;height:100%;object-fit:cover;">` : '<div style="width:100%;height:100%;background:linear-gradient(135deg, #005CFF, #6C38FF);display:flex;align-items:center;justify-content:center;font-size:48px;">📝</div>'}
                 </div>
                 <div class="blog-card-content">
                     <div class="blog-meta">
-                        <span class="blog-category">${tag}</span>
+                        <span class="blog-category">${categoryLabel}</span>
                         <span>${date}</span>
                         <span>${read}</span>
                     </div>
                     <h3>${title}</h3>
                     <p>${desc || 'No description available.'}</p>
-                    <a href="#" class="blog-read-more">Read More →</a>
+                    <a href="${postHref}" class="blog-read-more">${slug ? 'Read More →' : 'View blog'}</a>
                 </div>
             </article>
         `;
@@ -882,6 +880,98 @@ async function loadBlogList() {
     console.log('[Blog] ✅ Blog posts rendered successfully');
 }
 
+async function loadBlogPostPage() {
+    const root = document.getElementById('blog-post-root');
+    if (!root) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const slug = params.get('slug');
+    if (!slug) {
+        root.innerHTML =
+            '<div class="container blog-post-wrap"><div class="blog-post-error"><h1>Not found</h1><p>No article slug in the URL.</p><p><a class="blog-read-more" href="blog.html">← Back to blog</a></p></div></div>';
+        return;
+    }
+
+    root.innerHTML =
+        '<div class="container blog-post-wrap"><p class="blog-post-loading">Loading article…</p></div>';
+
+    const post = await fetchJson('/blog/' + encodeURIComponent(slug));
+    if (!post || post.status !== 'published') {
+        root.innerHTML =
+            '<div class="container blog-post-wrap"><div class="blog-post-error"><h1>Post not found</h1><p>This article is unavailable or not published.</p><p><a class="blog-read-more" href="blog.html">← Back to blog</a></p></div></div>';
+        return;
+    }
+
+    const title = escapeHtml(post.title || '');
+    const desc = escapeHtml(post.description || '');
+    const dateRaw = post.publishedAt || post.createdAt;
+    const date = dateRaw
+        ? new Date(dateRaw).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
+        : '';
+    const cat = escapeHtml((post.category || '').trim() || 'General');
+    const img = post.thumbnail ? escapeHtml(post.thumbnail) : '';
+    const body = sanitizeBlogBodyHtml(post.contentHtml || '');
+
+    if (post.seoTitle) document.title = post.seoTitle + ' | Nullscape';
+    const meta = document.querySelector('meta[name="description"]');
+    if (meta && post.seoDescription) meta.setAttribute('content', post.seoDescription);
+
+    root.innerHTML =
+        '<article class="container blog-post-wrap blog-post-article">' +
+        '<nav class="blog-post-breadcrumb"><a href="blog.html">Blog</a> <span aria-hidden="true">/</span> <span>' +
+        title +
+        '</span></nav>' +
+        (img ? '<div class="blog-post-feature"><img src="' + img + '" alt="' + title + '" loading="eager"></div>' : '') +
+        '<header class="blog-post-header"><p class="blog-post-meta">' +
+        cat +
+        (date ? ' · ' + date : '') +
+        '</p><h1>' +
+        title +
+        '</h1>' +
+        (desc ? '<p class="blog-post-lead">' + desc + '</p>' : '') +
+        '</header>' +
+        '<div class="blog-post-body">' +
+        body +
+        '</div>' +
+        '<p class="blog-post-footer-nav"><a class="blog-read-more" href="blog.html">← All posts</a></p>' +
+        '</article>';
+}
+
+function bindBlogFilterDelegation() {
+    const filterContainer = document.querySelector('.blog-filters');
+    if (!filterContainer || filterContainer.dataset.nsBlogFilterDelegation === '1') return;
+    filterContainer.dataset.nsBlogFilterDelegation = '1';
+    filterContainer.addEventListener('click', (e) => {
+        const btn = e.target.closest('.blog-filter-btn');
+        if (!btn || !filterContainer.contains(btn)) return;
+        filterContainer.querySelectorAll('.blog-filter-btn').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filter = btn.getAttribute('data-filter');
+        const blogCards = document.querySelectorAll('.blog-card');
+        blogCards.forEach((card, index) => {
+            const category = card.getAttribute('data-category');
+            if (filter === 'all' || category === filter) {
+                setTimeout(() => {
+                    card.style.display = 'block';
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    requestAnimationFrame(() => {
+                        card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    });
+                }, index * 30);
+            } else {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.display = 'none';
+                }, 300);
+            }
+        });
+    });
+}
+
 // Load Blog Categories for filtering
 async function loadBlogCategories() {
     const filterContainer = document.querySelector('.blog-filters');
@@ -890,81 +980,37 @@ async function loadBlogCategories() {
         return;
     }
     
-    console.log('[Blog Categories] Loading categories...');
-    const data = await fetchJson('/blog-categories?status=active&limit=100');
+    bindBlogFilterDelegation();
     
+    console.log('[Blog Categories] Loading categories...');
+    const data = await fetchJson('/blog-categories?status=active&limit=100&sort=order');
+
+    const allButton = filterContainer.querySelector('[data-filter="all"]');
+    filterContainer.querySelectorAll('.blog-filter-btn:not([data-filter="all"])').forEach((btn) => btn.remove());
+
     if (!data?.items || data.items.length === 0) {
         console.log('[Blog Categories] No categories found');
-        // Keep default "All" button if no categories
         return;
     }
-    
+
     console.log(`[Blog Categories] Found ${data.items.length} categories`);
     
-    // Create filter buttons
-    const allButton = filterContainer.querySelector('[data-filter="all"]');
-    const existingButtons = filterContainer.querySelectorAll('.blog-filter-btn:not([data-filter="all"])');
-    
-    // Remove old category buttons (except "All")
-    existingButtons.forEach(btn => btn.remove());
-    
-    // Add category buttons
-    data.items.forEach(category => {
+    data.items.forEach((category) => {
         const button = document.createElement('button');
+        button.type = 'button';
         button.className = 'blog-filter-btn';
-        button.setAttribute('data-filter', category.slug || category.name.toLowerCase().replace(/\s+/g, '-'));
+        // Must match `data-category` on cards (slugify of post.category name), not a stale slug field
+        const key = slugifyBlogCategoryKey(category.name);
+        button.setAttribute('data-filter', key);
         button.textContent = category.name || 'Unnamed';
-        
-        // Insert before the last element (if there's an "All" button) or append
-        if (allButton && allButton.nextSibling) {
-            filterContainer.insertBefore(button, allButton.nextSibling);
-        } else {
-            filterContainer.appendChild(button);
-        }
+        filterContainer.appendChild(button);
     });
     
-    // Re-initialize filter functionality
-    setTimeout(() => {
-        const blogFilterButtons = document.querySelectorAll('.blog-filter-btn');
-        const blogCards = document.querySelectorAll('.blog-card');
-        
-        blogFilterButtons.forEach(button => {
-            // Remove existing listeners
-            const newButton = button.cloneNode(true);
-            button.parentNode?.replaceChild(newButton, button);
-            
-            newButton.addEventListener('click', () => {
-                blogFilterButtons.forEach(btn => btn.classList.remove('active'));
-                newButton.classList.add('active');
-                
-                const filter = newButton.getAttribute('data-filter');
-                
-                blogCards.forEach((card, index) => {
-                    const category = card.getAttribute('data-category');
-                    if (filter === 'all' || category === filter) {
-                        setTimeout(() => {
-                            card.style.display = 'block';
-                            card.style.opacity = '0';
-                            card.style.transform = 'translateY(20px)';
-                            requestAnimationFrame(() => {
-                                card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-                                card.style.opacity = '1';
-                                card.style.transform = 'translateY(0)';
-                            });
-                        }, index * 30);
-                    } else {
-                        card.style.opacity = '0';
-                        card.style.transform = 'translateY(20px)';
-                        setTimeout(() => {
-                            card.style.display = 'none';
-                        }, 300);
-                    }
-                });
-            });
-        });
-    }, 100);
+    if (allButton && filterContainer.firstElementChild !== allButton) {
+        filterContainer.insertBefore(allButton, filterContainer.firstElementChild);
+    }
     
-    console.log('[Blog Categories] ✅ Categories loaded and filters initialized');
+    console.log('[Blog Categories] ✅ Categories loaded');
 }
 
 // Render Team members on homepage (with skeleton loader)
@@ -972,10 +1018,20 @@ async function loadTeam() {
     const container = document.querySelector('.team-grid');
     if (!container) return;
     
-    const data = await fetchJson('/team?status=active&limit=100');
-    
-    if (!data?.items || data.items.length === 0) {
-        // Show empty state if no team data
+    const data = await fetchJson('/team?status=active&limit=100&sort=order');
+
+    if (!data) {
+        container.innerHTML = `
+            <div class="empty-state-card">
+                <div class="empty-state-icon">⚠️</div>
+                <h3>Unable to Load Team</h3>
+                <p>Could not connect to the API. Please check if the backend is running.</p>
+            </div>
+        `;
+        return;
+    }
+
+    if (!data.items || data.items.length === 0) {
         container.innerHTML = `
             <div class="empty-state-card">
                 <div class="empty-state-icon">👥</div>
@@ -985,18 +1041,19 @@ async function loadTeam() {
         `;
         return;
     }
-    
-    container.innerHTML = data.items.slice(0, 4).map(member => {
+
+    container.innerHTML = data.items.slice(0, 4).map((member) => {
         const name = escapeHtml(member.name || '');
         const role = escapeHtml(member.role || '');
-        const photo = escapeHtml(member.photo || '');
-        const initials = name.split(' ').map(n => n[0]).join('').toUpperCase() || 'TM';
-        
+        const imgUrl = safeHttpImageUrl(member.image || member.photo || '');
+        const initials = name.split(' ').map((n) => n[0]).join('').toUpperCase() || 'TM';
+        const avatarInner = imgUrl
+            ? `<img src="${imgUrl}" alt="" class="team-avatar__img" loading="lazy" width="80" height="80">`
+            : `<span class="team-avatar__initials">${initials}</span>`;
+
         return `
             <div class="team-member will-animate">
-                <div class="team-avatar" ${photo ? `style="background-image:url('${photo}');background-size:cover;background-position:center;"` : ''}>
-                    ${!photo ? `<span style="font-size:24px;font-weight:bold;color:#005CFF;">${initials}</span>` : ''}
-                </div>
+                <div class="team-avatar">${avatarInner}</div>
                 <h4>${name}</h4>
                 <p>${role}</p>
             </div>
@@ -1017,7 +1074,7 @@ async function loadTechStack() {
     // Show skeleton loader
     container.innerHTML = Array(12).fill(0).map(() => '<div class="skeleton-tech-item"></div>').join('');
     
-    const data = await fetchJson('/tech-stack?status=active&limit=100');
+    const data = await fetchJson('/tech-stack?status=active&limit=100&sort=order');
     
     if (!data?.items || data.items.length === 0) {
         container.innerHTML = `
@@ -1046,6 +1103,98 @@ async function loadTechStack() {
     });
 }
 
+// Technologies And Platforms Tabs Functionality
+function initTechnologiesTabs() {
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const tabList = document.querySelector('.technologies-tabs');
+    
+    if (tabButtons.length === 0 || !tabList) return;
+    
+    // Switch tab function
+    function switchTab(targetButton) {
+        const targetContentId = targetButton.getAttribute('aria-controls');
+        const targetContent = document.getElementById(targetContentId);
+        
+        if (!targetContent) return;
+        
+        // Remove active class and ARIA attributes from all buttons and contents
+        tabButtons.forEach(btn => {
+            btn.classList.remove('active');
+            btn.setAttribute('aria-selected', 'false');
+            btn.setAttribute('tabindex', '-1');
+        });
+        
+        tabContents.forEach(content => {
+            content.classList.remove('active');
+            content.setAttribute('aria-hidden', 'true');
+            content.setAttribute('tabindex', '-1');
+        });
+        
+        // Add active class and ARIA attributes to selected button and content
+        targetButton.classList.add('active');
+        targetButton.setAttribute('aria-selected', 'true');
+        targetButton.setAttribute('tabindex', '0');
+        
+        targetContent.classList.add('active');
+        targetContent.setAttribute('aria-hidden', 'false');
+        targetContent.setAttribute('tabindex', '0');
+        
+        // Smooth scroll to content if on mobile
+        if (window.innerWidth <= 768) {
+            setTimeout(() => {
+                targetContent.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        }
+    }
+    
+    // Click handler
+    tabButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            switchTab(button);
+        });
+    });
+    
+    // Keyboard navigation
+    tabList.addEventListener('keydown', (e) => {
+        const currentIndex = Array.from(tabButtons).findIndex(btn => btn.getAttribute('aria-selected') === 'true');
+        let targetIndex = currentIndex;
+        
+        switch(e.key) {
+            case 'ArrowLeft':
+                e.preventDefault();
+                targetIndex = currentIndex > 0 ? currentIndex - 1 : tabButtons.length - 1;
+                break;
+            case 'ArrowRight':
+                e.preventDefault();
+                targetIndex = currentIndex < tabButtons.length - 1 ? currentIndex + 1 : 0;
+                break;
+            case 'Home':
+                e.preventDefault();
+                targetIndex = 0;
+                break;
+            case 'End':
+                e.preventDefault();
+                targetIndex = tabButtons.length - 1;
+                break;
+            default:
+                return;
+        }
+        
+        if (targetIndex !== currentIndex && targetIndex >= 0) {
+            switchTab(tabButtons[targetIndex]);
+            tabButtons[targetIndex].focus();
+        }
+    });
+    
+    // Initialize first tab as active if not already set
+    const activeButton = Array.from(tabButtons).find(btn => btn.classList.contains('active')) || tabButtons[0];
+    if (activeButton) {
+        switchTab(activeButton);
+    }
+}
+
 // Render Pricing Plans on homepage (with skeleton loader)
 async function loadPricingPlans() {
     const container = document.querySelector('.pricing-grid');
@@ -1054,7 +1203,7 @@ async function loadPricingPlans() {
     // Show skeleton loader
     container.innerHTML = createSkeletonLoader(3, 'card');
     
-    const data = await fetchJson('/pricing?status=active&limit=100');
+    const data = await fetchJson('/pricing?status=active&limit=100&sort=order');
     
     if (!data?.items || data.items.length === 0) {
         container.innerHTML = `
@@ -1178,8 +1327,27 @@ async function loadPartners() {
 let currentServiceCategory = null;
 let allServices = [];
 
-async function loadServiceCategories() {
+function bindServiceCategoryListOnce() {
     const categoryList = document.getElementById('serviceCategoryList');
+    if (!categoryList || categoryList.dataset.nsCategoryClickBound === '1') return categoryList;
+    categoryList.dataset.nsCategoryClickBound = '1';
+    categoryList.addEventListener('click', (e) => {
+        const item = e.target.closest('.service-category-item');
+        if (!item) return;
+        const category = item.getAttribute('data-category');
+        const categoryName = item.getAttribute('data-category-name');
+        console.log(`\n[Custom Services] ===== CATEGORY CLICKED =====`);
+        console.log(`Category: ${categoryName} (${category})`);
+        categoryList.querySelectorAll('.service-category-item').forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+        currentServiceCategory = category;
+        filterServicesByCategory(category, categoryName);
+    });
+    return categoryList;
+}
+
+async function loadServiceCategories() {
+    const categoryList = bindServiceCategoryListOnce();
     if (!categoryList) return;
     
     console.log('[Service Categories] Loading categories...');
@@ -1200,26 +1368,6 @@ async function loadServiceCategories() {
         }
         return `<li class="service-category-item ${isActive}" data-category="${slug}" data-category-name="${name}">${name}</li>`;
     }).join('');
-    
-    // Add click handlers - use event delegation for better reliability
-    categoryList.addEventListener('click', (e) => {
-        const item = e.target.closest('.service-category-item');
-        if (!item) return;
-        
-        const category = item.getAttribute('data-category');
-        const categoryName = item.getAttribute('data-category-name');
-        
-        console.log(`\n[Custom Services] ===== CATEGORY CLICKED =====`);
-        console.log(`Category: ${categoryName} (${category})`);
-        
-        // Update active state
-        categoryList.querySelectorAll('.service-category-item').forEach(i => i.classList.remove('active'));
-        item.classList.add('active');
-        
-        // Filter services immediately
-        currentServiceCategory = category;
-        filterServicesByCategory(category, categoryName);
-    });
     
     // Trigger filter for first active category if services are already loaded
     if (allServices && allServices.length > 0) {
@@ -1439,71 +1587,94 @@ function renderServices(services) {
     });
 }
 
-// Load Portfolio Categories for filters
+function bindPortfolioFilterDelegation() {
+    const filterContainer = document.querySelector('.portfolio-filters');
+    if (!filterContainer || filterContainer.dataset.nsPortfolioFilterBound === '1') return;
+    filterContainer.dataset.nsPortfolioFilterBound = '1';
+    filterContainer.addEventListener('click', (e) => {
+        const btn = e.target.closest('.filter-btn');
+        if (!btn || !filterContainer.contains(btn)) return;
+        const filter = btn.getAttribute('data-filter');
+        filterContainer.querySelectorAll('.filter-btn').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        const portfolioCards = document.querySelectorAll('.portfolio-card');
+        portfolioCards.forEach((card, index) => {
+            const cat = card.getAttribute('data-category');
+            if (filter === 'all' || cat === filter) {
+                setTimeout(() => {
+                    card.style.display = 'block';
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.9)';
+                    requestAnimationFrame(() => {
+                        card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                        card.style.opacity = '1';
+                        card.style.transform = 'scale(1)';
+                    });
+                }, index * 30);
+            } else {
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    card.style.display = 'none';
+                }, 300);
+            }
+        });
+    });
+}
+
+// Load Portfolio Categories for filters (idempotent: no duplicate buttons on refresh)
 async function loadPortfolioCategories() {
-    const data = await fetchJson('/portfolio-categories?status=active&limit=100');
     const filterContainer = document.querySelector('.portfolio-filters');
     if (!filterContainer) return;
-    
+
+    bindPortfolioFilterDelegation();
+
+    const data = await fetchJson('/portfolio-categories?status=active&limit=100&sort=order');
+
+    filterContainer.querySelectorAll('.filter-btn:not([data-filter="all"])').forEach((b) => b.remove());
+
     if (!data?.items || data.items.length === 0) {
-        // If no categories, keep only "All" button
         return;
     }
-    
-    // Keep "All" button, add category buttons
-    const existingAllBtn = filterContainer.querySelector('[data-filter="all"]');
-    const categoryButtons = data.items.map(cat => {
-        const name = escapeHtml(cat.name || '');
-        const slug = escapeHtml(cat.slug || name.toLowerCase().replace(/\s+/g, '-'));
-        return `<button class="filter-btn" data-filter="${slug}">${name}</button>`;
-    }).join('');
-    
-    if (existingAllBtn) {
-        existingAllBtn.insertAdjacentHTML('afterend', categoryButtons);
-    } else {
-        filterContainer.innerHTML = `<button class="filter-btn active" data-filter="all">All</button>${categoryButtons}`;
+
+    const allBtn = filterContainer.querySelector('[data-filter="all"]');
+    let insertAfter = allBtn;
+    data.items.forEach((cat) => {
+        const slug = portfolioCategoryFilterSlug(cat);
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'filter-btn';
+        button.setAttribute('data-filter', slug);
+        button.textContent = cat.name || 'Category';
+        if (insertAfter) {
+            insertAfter.after(button);
+            insertAfter = button;
+        } else {
+            filterContainer.appendChild(button);
+        }
+    });
+}
+
+// ============================================
+// Growth CMS (public GET /page/:slug, /global-settings)
+// ============================================
+
+async function initGrowthCmsMounts() {
+    if (typeof window.growthCmsRenderer !== 'object' || !window.growthCmsRenderer) return;
+    try {
+        await window.growthCmsRenderer.hydrateGlobalSettings();
+    } catch (e) {
+        console.warn('[Growth CMS] hydrateGlobalSettings', e);
     }
-    
-    // Re-wire filter buttons after portfolio is loaded
-    setTimeout(() => {
-        const filterButtons = filterContainer.querySelectorAll('.filter-btn');
-        const portfolioCards = document.querySelectorAll('.portfolio-card');
-        
-        filterButtons.forEach(button => {
-            // Remove existing listeners by cloning
-            const newButton = button.cloneNode(true);
-            button.parentNode?.replaceChild(newButton, button);
-            
-            newButton.addEventListener('click', () => {
-                const filter = newButton.getAttribute('data-filter');
-                
-                filterButtons.forEach(btn => btn.classList.remove('active'));
-                newButton.classList.add('active');
-                
-                portfolioCards.forEach((card, index) => {
-                    const category = card.getAttribute('data-category');
-                    if (filter === 'all' || category === filter) {
-                        setTimeout(() => {
-                            card.style.display = 'block';
-                            card.style.opacity = '0';
-                            card.style.transform = 'scale(0.9)';
-                            requestAnimationFrame(() => {
-                                card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-                                card.style.opacity = '1';
-                                card.style.transform = 'scale(1)';
-                            });
-                        }, index * 30);
-                    } else {
-                        card.style.opacity = '0';
-                        card.style.transform = 'scale(0.9)';
-                        setTimeout(() => {
-                            card.style.display = 'none';
-                        }, 300);
-                    }
-                });
-            });
-        });
-    }, 500); // Wait for portfolio to load
+    const roots = document.querySelectorAll('[data-cms-root]');
+    for (const el of roots) {
+        const slug = el.getAttribute('data-cms-slug') || 'home';
+        try {
+            await window.growthCmsRenderer.renderCmsPage(slug, el);
+        } catch (e) {
+            console.warn('[Growth CMS] render failed for slug:', slug, e);
+        }
+    }
 }
 
 // ============================================
@@ -1550,9 +1721,16 @@ window.refreshWebsiteContent = async function() {
             loadPromises.push(loadPricingPlans());
         }
         
-        // Blog page content
-        if (document.querySelector('.blog-grid')) {
-            loadPromises.push(loadBlogList());
+        // Blog page: load category filters before posts so data-filter keys match card data-category
+        const blogGrid = document.querySelector('.blog-grid');
+        const blogFilters = document.querySelector('.blog-filters');
+        if (blogGrid && blogFilters) {
+            await loadBlogCategories();
+            await loadBlogList();
+        } else {
+            if (blogGrid) {
+                loadPromises.push(loadBlogList());
+            }
         }
         
         // Load all available content in parallel
@@ -1563,11 +1741,17 @@ window.refreshWebsiteContent = async function() {
         if (document.querySelector('.portfolio-filters')) {
             categoryPromises.push(loadPortfolioCategories());
         }
-        if (document.querySelector('.blog-filters')) {
+        if (document.querySelector('.blog-filters') && !(blogGrid && blogFilters)) {
             categoryPromises.push(loadBlogCategories());
         }
         
         await Promise.all(categoryPromises);
+
+        if (document.getElementById('blog-post-root')) {
+            await loadBlogPostPage();
+        }
+
+        await initGrowthCmsMounts();
         
         console.log('[Website] ✅ All content refreshed successfully!');
         
@@ -1618,6 +1802,9 @@ window.websiteContentControls = {
 window.addEventListener('DOMContentLoaded', async () => {
     console.log('[Website] DOM loaded, starting content fetch...');
     console.log('[Website] API_BASE:', API_BASE);
+    
+    // Initialize technologies tabs
+    initTechnologiesTabs();
     
     // Initial content load
     await window.refreshWebsiteContent();

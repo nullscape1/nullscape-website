@@ -67,8 +67,9 @@
             opacity: 0.9;
         }
 
-        .portfolio-content {
-            padding: var(--spacing-2xl) 0;
+        /* Page shell only — do not reuse .portfolio-content (same class as card bodies in script.js) */
+        .portfolio-page {
+            padding: var(--spacing-2xl) 0 var(--spacing-2xl);
             background: var(--white);
         }
     </style>
@@ -103,7 +104,7 @@
             <ul class="nav-menu" id="navMenu">
                 <li><a href="index.html#home" class="nav-link">Home</a></li>
                 <li><a href="index.html#services" class="nav-link">Services</a></li>
-                <li><a href="index.html#solutions" class="nav-link">Solutions</a></li>
+                <li><a href="index.html#portfolio" class="nav-link">Solutions</a></li>
                 <li><a href="index.html#products" class="nav-link">Products</a></li>
                 <li><a href="index.html#about" class="nav-link">About Us</a></li>
                 <li><a href="portfolio.html" class="nav-link active">Portfolio</a></li>
@@ -131,7 +132,7 @@
     </section>
 
     <!-- Portfolio Section -->
-    <section class="portfolio-content">
+    <section class="portfolio-page">
         <div class="container">
             <!-- Portfolio Categories will be loaded dynamically from admin panel -->
             <div class="portfolio-filters">
@@ -175,7 +176,7 @@
                     <ul>
                         <li><a href="index.html#home">Home</a></li>
                         <li><a href="index.html#services">Services</a></li>
-                        <li><a href="index.html#solutions">Solutions</a></li>
+                        <li><a href="index.html#portfolio">Solutions</a></li>
                         <li><a href="portfolio.html">Portfolio</a></li>
                         <li><a href="index.html#about">About Us</a></li>
                     </ul>
@@ -238,6 +239,9 @@
             setTimeout(hideLoader, 1000);
         })();
     </script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/api.js"></script>
     <script src="assets/js/script.js" defer></script>
 </body>
 </html>

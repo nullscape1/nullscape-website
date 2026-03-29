@@ -251,7 +251,7 @@
             <ul class="nav-menu" id="navMenu">
                 <li><a href="index.html#home" class="nav-link">Home</a></li>
                 <li><a href="index.html#services" class="nav-link">Services</a></li>
-                <li><a href="index.html#solutions" class="nav-link">Solutions</a></li>
+                <li><a href="index.html#portfolio" class="nav-link">Solutions</a></li>
                 <li><a href="index.html#products" class="nav-link">Products</a></li>
                 <li><a href="index.html#about" class="nav-link">About Us</a></li>
                 <li><a href="index.html#portfolio" class="nav-link">Portfolio</a></li>
@@ -280,12 +280,8 @@
     <section class="blog-content">
         <div class="container">
             <div class="blog-filters">
-                <button class="blog-filter-btn active" data-filter="all">All Posts</button>
-                <button class="blog-filter-btn" data-filter="ai">AI & Machine Learning</button>
-                <button class="blog-filter-btn" data-filter="web">Web Development</button>
-                <button class="blog-filter-btn" data-filter="mobile">Mobile Development</button>
-                <button class="blog-filter-btn" data-filter="cloud">Cloud & DevOps</button>
-                <button class="blog-filter-btn" data-filter="trends">Tech Trends</button>
+                <button type="button" class="blog-filter-btn active" data-filter="all">All Posts</button>
+                <!-- Category buttons are injected from GET /blog-categories (admin) -->
             </div>
 
             <div class="blog-grid">
@@ -333,7 +329,7 @@
                     <ul>
                         <li><a href="index.html">Home</a></li>
                         <li><a href="index.html#services">Services</a></li>
-                        <li><a href="index.html#solutions">Solutions</a></li>
+                        <li><a href="index.html#portfolio">Solutions</a></li>
                         <li><a href="index.html#portfolio">Portfolio</a></li>
                         <li><a href="index.html#about">About Us</a></li>
                         <li><a href="blog.html">Blog</a></li>
@@ -368,92 +364,9 @@
         </div>
     </footer>
 
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/api.js"></script>
     <script src="assets/js/script.js"></script>
-    <script>
-        // Blog page will use the main refreshWebsiteContent function from script.js
-        // This ensures consistent loading behavior across all pages
-        document.addEventListener('DOMContentLoaded', async () => {
-            console.log('[Blog Page] DOM loaded, waiting for script.js...');
-            
-            // Wait for script.js to fully load and initialize
-            let attempts = 0;
-            const maxAttempts = 20;
-            
-            const tryLoadBlog = async () => {
-                attempts++;
-                // Check if the main refresh function is available
-                if (typeof window.refreshWebsiteContent === 'function') {
-                    console.log('[Blog Page] Main refresh function found, loading blog content...');
-                    // Use the main refresh function which will load blog content if .blog-grid exists
-                    await window.refreshWebsiteContent();
-                } else if (attempts < maxAttempts) {
-                    console.log(`[Blog Page] Waiting for script.js... (attempt ${attempts}/${maxAttempts})`);
-                    setTimeout(tryLoadBlog, 200);
-                } else {
-                    console.error('[Blog Page] Script.js not loaded after waiting');
-                    const grid = document.querySelector('.blog-grid');
-                    if (grid) {
-                        grid.innerHTML = `
-                            <div class="empty-state-card">
-                                <div class="empty-state-icon">⚠️</div>
-                                <h3>Script Loading Error</h3>
-                                <p>Could not load blog posts. Please refresh the page.</p>
-                            </div>
-                        `;
-                    }
-                }
-            };
-            
-            // Start trying to load after a short delay to let script.js initialize
-            setTimeout(tryLoadBlog, 300);
-        });
-
-        // Blog filter functionality (will be re-initialized after blog posts load)
-        function initBlogFilters() {
-            const blogFilterButtons = document.querySelectorAll('.blog-filter-btn');
-            const blogCards = document.querySelectorAll('.blog-card');
-
-            blogFilterButtons.forEach(button => {
-                // Remove existing listeners
-                const newButton = button.cloneNode(true);
-                button.parentNode?.replaceChild(newButton, button);
-                
-                newButton.addEventListener('click', () => {
-                    blogFilterButtons.forEach(btn => btn.classList.remove('active'));
-                    newButton.classList.add('active');
-                    
-                    const filter = newButton.getAttribute('data-filter');
-                    
-                    blogCards.forEach(card => {
-                        if (filter === 'all' || card.getAttribute('data-category') === filter) {
-                            card.style.display = 'block';
-                            setTimeout(() => {
-                                card.style.opacity = '1';
-                                card.style.transform = 'translateY(0)';
-                            }, 10);
-                        } else {
-                            card.style.opacity = '0';
-                            card.style.transform = 'translateY(20px)';
-                            setTimeout(() => {
-                                card.style.display = 'none';
-                            }, 300);
-                        }
-                    });
-                });
-            });
-        }
-
-        // Initialize filters after blog posts load
-        setTimeout(initBlogFilters, 1000);
-        
-        // Re-initialize when content is refreshed
-        if (window.refreshWebsiteContent) {
-            const originalRefresh = window.refreshWebsiteContent;
-            window.refreshWebsiteContent = async function() {
-                await originalRefresh();
-                setTimeout(initBlogFilters, 500);
-            };
-        }
-    </script>
 </body>
 </html>

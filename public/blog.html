@@ -230,6 +230,9 @@
     </style>
 </head>
 <body>
+    <!-- Skip to Content (Accessibility) -->
+    <a href="#main" class="skip-to-content">Skip to main content</a>
+
     <header class="header" id="header">
         <nav class="nav container" aria-label="Primary navigation">
             <div class="nav-brand">
@@ -310,35 +313,37 @@
         </nav>
     </header>
 
-    <!-- Blog Hero -->
-    <section class="blog-hero">
-        <div class="blog-hero-content">
-            <h1>Nullscape Blog</h1>
-            <p>Insights, trends, and stories from the world of technology</p>
-        </div>
-    </section>
-
-    <!-- Blog Content -->
-    <section class="blog-content">
-        <div class="container">
-            <div class="blog-filters">
-                <button type="button" class="blog-filter-btn active" data-filter="all">All Posts</button>
-                <!-- Category buttons are injected from GET /blog-categories (admin) -->
+    <main id="main" tabindex="-1">
+        <!-- Blog Hero -->
+        <section class="blog-hero">
+            <div class="blog-hero-content">
+                <h1>Nullscape Blog</h1>
+                <p>Insights, trends, and stories from the world of technology</p>
             </div>
+        </section>
 
-            <div class="blog-grid">
-                <!-- Blog posts will be loaded dynamically from admin panel via API -->
-            </div>
+        <!-- Blog Content -->
+        <section class="blog-content">
+            <div class="container">
+                <div class="blog-filters">
+                    <button type="button" class="blog-filter-btn active" data-filter="all">All Posts</button>
+                    <!-- Category buttons are injected from GET /blog-categories (admin) -->
+                </div>
 
-            <div class="blog-pagination">
-                <button class="pagination-btn" disabled>← Previous</button>
-                <button class="pagination-btn active">1</button>
-                <button class="pagination-btn">2</button>
-                <button class="pagination-btn">3</button>
-                <button class="pagination-btn">Next →</button>
+                <div class="blog-grid">
+                    <!-- Blog posts will be loaded dynamically from admin panel via API -->
+                </div>
+
+                <div class="blog-pagination">
+                    <button class="pagination-btn" disabled>← Previous</button>
+                    <button class="pagination-btn active">1</button>
+                    <button class="pagination-btn">2</button>
+                    <button class="pagination-btn">3</button>
+                    <button class="pagination-btn">Next →</button>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+    </main>
 
     <!-- Footer -->
     <footer class="footer">
@@ -393,8 +398,9 @@
                 <div class="footer-column">
                     <h4>Newsletter</h4>
                     <p>Subscribe to get updates on new technologies and projects</p>
-                    <form class="newsletter-form">
-                        <input type="email" placeholder="Your email address">
+                    <form class="newsletter-form" name="newsletter" method="POST" data-netlify="true">
+                        <input type="hidden" name="form-name" value="newsletter">
+                        <input type="email" name="email" placeholder="Your email address" required>
                         <button type="submit" class="btn-primary">Subscribe</button>
                     </form>
                 </div>

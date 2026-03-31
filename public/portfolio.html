@@ -75,6 +75,9 @@
     </style>
 </head>
 <body>
+    <!-- Skip to Content (Accessibility) -->
+    <a href="#main" class="skip-to-content">Skip to main content</a>
+
     <!-- Loading Animation -->
     <div class="loader" id="loader">
         <div class="loader-content">
@@ -163,29 +166,31 @@
         </nav>
     </header>
 
-    <!-- Portfolio Hero Section -->
-    <section class="portfolio-hero">
-        <div class="container">
-            <div class="portfolio-hero-content">
-                <h1>Portfolio & Case Studies</h1>
-                <p>Explore our successful projects and client success stories</p>
+    <main id="main" tabindex="-1">
+        <!-- Portfolio Hero Section -->
+        <section class="portfolio-hero">
+            <div class="container">
+                <div class="portfolio-hero-content">
+                    <h1>Portfolio & Case Studies</h1>
+                    <p>Explore our successful projects and client success stories</p>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Portfolio Section -->
-    <section class="portfolio-page">
-        <div class="container">
-            <!-- Portfolio Categories will be loaded dynamically from admin panel -->
-            <div class="portfolio-filters">
-                <button class="filter-btn active" data-filter="all">All</button>
-                <!-- Category buttons loaded via API -->
+        <!-- Portfolio Section -->
+        <section class="portfolio-page">
+            <div class="container">
+                <!-- Portfolio Categories will be loaded dynamically from admin panel -->
+                <div class="portfolio-filters">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <!-- Category buttons loaded via API -->
+                </div>
+                <div class="portfolio-grid">
+                    <!-- Content loaded via API -->
+                </div>
             </div>
-            <div class="portfolio-grid">
-                <!-- Content loaded via API -->
-            </div>
-        </div>
-    </section>
+        </section>
+    </main>
 
     <!-- Footer -->
     <footer class="footer">

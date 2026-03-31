@@ -65,6 +65,32 @@ body {
     overflow-x: hidden;
 }
 
+/* Accessible focus + skip link */
+:where(a, button, input, textarea, select, [tabindex]):focus-visible {
+    outline: 2px solid var(--primary-blue);
+    outline-offset: 3px;
+}
+
+.skip-to-content {
+    position: fixed;
+    top: var(--spacing-sm);
+    left: var(--spacing-sm);
+    z-index: 11000;
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    background: var(--white);
+    color: var(--dark-gray);
+    text-decoration: none;
+    box-shadow: var(--shadow-md);
+    transform: translateY(-160%);
+    transition: transform var(--transition-fast);
+}
+
+.skip-to-content:focus,
+.skip-to-content:focus-visible {
+    transform: translateY(0);
+}
+
 .container {
     max-width: 1200px;
     margin: 0 auto;

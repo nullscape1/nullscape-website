@@ -9,6 +9,14 @@
       "destination": "/blog.html"
     },
     {
+      "source": "/portfolio",
+      "destination": "/portfolio.html"
+    },
+    {
+      "source": "/blog-post",
+      "destination": "/blog-post.html"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

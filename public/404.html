@@ -122,6 +122,9 @@
     </style>
 </head>
 <body>
+    <!-- Skip to Content (Accessibility) -->
+    <a href="#main" class="skip-to-content">Skip to main content</a>
+
     <header class="header" id="header">
         <nav class="nav container" aria-label="Primary navigation">
             <div class="nav-brand">
@@ -202,36 +205,38 @@
         </nav>
     </header>
 
-    <!-- Error Page -->
-    <section class="error-page">
-        <div class="error-background">
-            <div class="floating-shape shape-1"></div>
-            <div class="floating-shape shape-2"></div>
-        </div>
-        <div class="error-content">
-            <div class="error-illustration">
-                <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="100" cy="100" r="80" fill="url(#errorGradient)" opacity="0.2"/>
-                    <path d="M70 70L130 130M130 70L70 130" stroke="url(#errorGradient)" stroke-width="8" stroke-linecap="round"/>
-                    <defs>
-                        <linearGradient id="errorGradient" x1="0" y1="0" x2="200" y2="200">
-                            <stop offset="0%" stop-color="#005CFF"/>
-                            <stop offset="100%" stop-color="#6C38FF"/>
-                        </linearGradient>
-                    </defs>
-                </svg>
+    <main id="main" tabindex="-1">
+        <!-- Error Page -->
+        <section class="error-page">
+            <div class="error-background">
+                <div class="floating-shape shape-1"></div>
+                <div class="floating-shape shape-2"></div>
             </div>
-            <h1 class="error-code">404</h1>
-            <h2 class="error-title">Page Not Found</h2>
-            <p class="error-description">
-                Oops! The page you're looking for doesn't exist. It might have been moved, deleted, or the URL might be incorrect.
-            </p>
-            <div class="error-actions">
-                <button class="btn-primary btn-large" onclick="window.location.href='index.html'">Go to Homepage</button>
-                <button class="btn-secondary btn-large" onclick="window.history.back()">Go Back</button>
+            <div class="error-content">
+                <div class="error-illustration">
+                    <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="100" cy="100" r="80" fill="url(#errorGradient)" opacity="0.2"/>
+                        <path d="M70 70L130 130M130 70L70 130" stroke="url(#errorGradient)" stroke-width="8" stroke-linecap="round"/>
+                        <defs>
+                            <linearGradient id="errorGradient" x1="0" y1="0" x2="200" y2="200">
+                                <stop offset="0%" stop-color="#005CFF"/>
+                                <stop offset="100%" stop-color="#6C38FF"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <h1 class="error-code">404</h1>
+                <h2 class="error-title">Page Not Found</h2>
+                <p class="error-description">
+                    Oops! The page you're looking for doesn't exist. It might have been moved, deleted, or the URL might be incorrect.
+                </p>
+                <div class="error-actions">
+                    <button class="btn-primary btn-large" onclick="window.location.href='index.html'">Go to Homepage</button>
+                    <button class="btn-secondary btn-large" onclick="window.history.back()">Go Back</button>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+    </main>
 
     <!-- Footer -->
     <footer class="footer">

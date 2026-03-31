@@ -2134,11 +2134,17 @@ if ('IntersectionObserver' in window) {
 // Performance: Preload critical resources
 // ============================================
 
-const preloadLink = document.createElement('link');
-preloadLink.rel = 'preload';
-preloadLink.as = 'style';
-preloadLink.href = 'styles.css';
-document.head.appendChild(preloadLink);
+try {
+    const existingCss = document.querySelector('link[rel="stylesheet"][href*="styles.css"]');
+    const cssHref = existingCss ? existingCss.getAttribute('href') : '/assets/css/styles.css';
+    const preloadLink = document.createElement('link');
+    preloadLink.rel = 'preload';
+    preloadLink.as = 'style';
+    preloadLink.href = cssHref;
+    document.head.appendChild(preloadLink);
+} catch (e) {
+    // ignore preload failures
+}
 
 // ============================================
 // Performance: Reduce motion for users who prefer it

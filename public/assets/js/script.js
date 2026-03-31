@@ -2108,6 +2108,34 @@ window.addEventListener('DOMContentLoaded', async () => {
 });
 
 // ============================================
+// FAQ Accordion (simple, accessible)
+// ============================================
+
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest && e.target.closest('.faq-q');
+    if (!btn) return;
+    const item = btn.closest('.faq-item');
+    if (!item) return;
+
+    const isOpen = item.classList.contains('is-open');
+
+    // Close others (keeps the list compact on mobile)
+    const list = item.parentElement;
+    if (list) {
+        list.querySelectorAll('.faq-item.is-open').forEach((el) => {
+            if (el !== item) {
+                el.classList.remove('is-open');
+                const b = el.querySelector('.faq-q');
+                if (b) b.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+
+    item.classList.toggle('is-open', !isOpen);
+    btn.setAttribute('aria-expanded', (!isOpen).toString());
+});
+
+// ============================================
 // Performance: Lazy load images
 // ============================================
 

@@ -1543,6 +1543,7 @@ body {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 4;
+    line-clamp: 4;
     overflow: hidden;
     margin: 0 !important;
     font-size: 15px;
@@ -2352,6 +2353,206 @@ button.carousel-dot {
 }
 
 /* ============================================
+   Process / How we work
+   ============================================ */
+
+.section-cta-row {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: center;
+    align-items: center;
+    margin-top: var(--spacing-xl);
+    flex-wrap: wrap;
+}
+
+.process {
+    background: var(--light-gray);
+}
+
+.process-grid {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-lg);
+    padding: 0;
+    margin: 0;
+}
+
+.process-card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    border: 1px solid rgba(15, 17, 21, 0.06);
+    box-shadow: var(--shadow-sm);
+}
+
+.process-card__num {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-sm);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: var(--white);
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple));
+    margin-bottom: var(--spacing-md);
+}
+
+.process-card__title {
+    font-family: var(--font-heading);
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 var(--spacing-xs);
+    color: var(--dark-gray);
+}
+
+.process-card__text {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #555;
+    margin: 0;
+}
+
+/* ============================================
+   Security & quality (trust signals)
+   ============================================ */
+
+.security {
+    background: var(--white);
+}
+
+.security-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-lg);
+}
+
+.security-card {
+    background: linear-gradient(145deg, rgba(0, 92, 255, 0.04), rgba(108, 56, 255, 0.06));
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    border: 1px solid rgba(15, 17, 21, 0.06);
+    box-shadow: var(--shadow-sm);
+}
+
+.security-card__title {
+    font-family: var(--font-heading);
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 var(--spacing-xs);
+    color: var(--dark-gray);
+}
+
+.security-card__text {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #555;
+    margin: 0;
+}
+
+.trust-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 12px;
+    justify-content: center;
+    margin-top: var(--spacing-xl);
+}
+
+.trust-badge {
+    padding: 10px 14px;
+    border-radius: 999px;
+    background: rgba(0, 92, 255, 0.06);
+    border: 1px solid rgba(0, 92, 255, 0.14);
+    color: var(--dark-gray);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* ============================================
+   FAQ (accordion)
+   ============================================ */
+
+.faq {
+    background: var(--light-gray);
+}
+
+.faq-list {
+    max-width: 880px;
+    margin: 0 auto;
+    display: grid;
+    gap: var(--spacing-sm);
+}
+
+.faq-item {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(15, 17, 21, 0.06);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+.faq-q {
+    width: 100%;
+    text-align: left;
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: transparent;
+    border: 0;
+    font-family: var(--font-heading);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--dark-gray);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    cursor: pointer;
+}
+
+.faq-icon {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    position: relative;
+    opacity: 0.8;
+}
+
+.faq-icon::before,
+.faq-icon::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 12px;
+    height: 2px;
+    background: currentColor;
+    transform: translate(-50%, -50%);
+    border-radius: 2px;
+}
+
+.faq-icon::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+    transition: transform var(--transition-fast);
+}
+
+.faq-item.is-open .faq-icon::after {
+    transform: translate(-50%, -50%) rotate(0deg);
+}
+
+.faq-a {
+    padding: 0 var(--spacing-lg) var(--spacing-md);
+    color: #555;
+    font-size: 15px;
+    line-height: 1.65;
+    display: none;
+}
+
+.faq-item.is-open .faq-a {
+    display: block;
+}
+
+/* ============================================
    Careers (in-page #careers)
    ============================================ */
 
@@ -2636,6 +2837,14 @@ button.carousel-dot {
     .custom-services-grid {
         grid-template-columns: repeat(2, 1fr);
     }
+
+    .process-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .security-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 1023px) {
@@ -2793,6 +3002,10 @@ button.carousel-dot {
     .footer-bottom {
         flex-direction: column;
         text-align: center;
+    }
+
+    .process-grid {
+        grid-template-columns: 1fr;
     }
 }
 
